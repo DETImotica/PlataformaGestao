@@ -1,0 +1,15 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
+<link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
+
+{% if last %}
+<h1>Sala {{ last.room_id }}</h1>
+<ul>
+        <li>
+            {{ last.name }}
+            {{ last.description }}
+        </li>
+</ul>
+{% else %}
+<p>Room not available.</p>
+{% endif %}

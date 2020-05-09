@@ -1,0 +1,15 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
+<link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
+
+{% if sensors_list %}
+<ul>
+    {% for sensor in sensors_list %}
+    <li>
+        {{ sensor.sensor_id }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No sensors are available.</p>
+{% endif %}

@@ -1,0 +1,15 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
+<link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
+
+{% if types_list %}
+<ul>
+    {% for type in types_list %}
+    <li>
+        {{ type.metric }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No types are available.</p>
+{% endif %}
