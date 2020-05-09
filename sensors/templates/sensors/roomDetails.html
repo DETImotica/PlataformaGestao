@@ -2,14 +2,25 @@
 <link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
 <link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
 
-{% if last %}
-<h1>Sala {{ last.room_id }}</h1>
+{% if room %}
+<h1>{{ room.name }} - {{ room.room_id }} - {{ room.description }}</h1>
+
+{% if sensors %}
 <ul>
-        <li>
-            {{ last.name }}
-            {{ last.description }}
-        </li>
+    {% for sensor in sensors %}
+    <li>{{ sensor.sensor_id }}</li>
+    <ul>
+        <li>{{ sensor.room_id }}</li>
+        <li>{{ sensor.description }}</li>
+        <li>{{ sensor.type }}</li>
+        <li>{{ sensor.symbol }}</li>
+    </ul>
+    {% endfor %}
 </ul>
+{% else %}
+<p>No sensors are available.</p>
+{% endif %}
+
 {% else %}
 <p>Room not available.</p>
 {% endif %}

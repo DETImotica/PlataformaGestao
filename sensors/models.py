@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Room(models.Model):
     managed = False
-    room_id = models.CharField(max_length=36, primary_key=True)
+    room_id = models.CharField(max_length=36)
     name = models.CharField(max_length=10)
     description = models.CharField(max_length=50)
 
@@ -13,9 +13,13 @@ class Room(models.Model):
 class Sensor(models.Model):
     managed = False
     sensor_id = models.CharField(max_length=36)
+    room_id = models.CharField(max_length=36)
+    description = models.CharField(max_length=50)
+    type = models.CharField(max_length=20)
+    symbol = models.CharField(max_length=5)
 
     def __str__(self):
-        return self.sensor_id
+        return self.type
 
 class Type(models.Model):
     managed = False
