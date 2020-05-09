@@ -1,0 +1,8 @@
+
+venv/
+
+DETImotica/__pycache__/
+
+sensors/__pycache__/
+
+sensors/migrations/
