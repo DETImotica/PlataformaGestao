@@ -19,7 +19,7 @@ class Sensor(models.Model):
     symbol = models.CharField(max_length=5)
 
     def __str__(self):
-        return self.type
+        return self.sensor_id
 
 class Type(models.Model):
     managed = False

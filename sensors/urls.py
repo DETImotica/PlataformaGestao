@@ -5,9 +5,9 @@ from . import views
 app_name = 'sensors'
 urlpatterns = [
     path('rooms/', views.RoomsIndexView.as_view(), name='rooms'),
-    #path('sensors/', views.SensorsIndexView.as_view(), name='sensors'),
+    path('sensors/', views.SensorsIndexView.as_view(), name='sensors'),
     path('types/', views.TypesIndexView.as_view(), name='types'),
 
     path('rooms/<slug:room_id>/', views.RoomsIndexView.roomDetails, name="roomDetails"),
-    #path('sensors/<slug:sensor_id>/', views.SensorsIndexView.sensorDetails, name='sensorDetails')
+    path('sensors/<slug:sensor_id>/', views.SensorsIndexView.sensorDetails, name='sensorDetails')
 ]
