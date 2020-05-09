@@ -1,8 +1,9 @@
-
 venv/
 
-DETImotica/__pycache__/
-
-sensors/__pycache__/
+*/__pycache__/
 
 sensors/migrations/
+
+.idea/
+
+*.pyc

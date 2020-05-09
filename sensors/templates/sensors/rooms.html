@@ -1,15 +1,48 @@
+{% extends 'sensors/base.html' %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
-<link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
 
-{% if rooms_list %}
-<ul>
-    {% for room in rooms_list %}
-    <li>
-        <a href="{% url 'sensors:roomDetails' room_id=room.room_id  %}">{{ room }}</a>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No rooms are available.</p>
-{% endif %}
+{% block title %}Salas{% endblock %}
+
+{% block content %}
+
+    <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h2 mb-2 text-gray-800">Salas</h1>
+          <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">DETI</h6>
+            </div>
+            <div class="card-body">
+                {% if rooms_list %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                          <thead>
+                            <tr>
+                              <th>Nome</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for room in rooms_list %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'sensors:roomDetails' room_id=room.room_id  %}">{{ room }}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                {% else %}
+                    <p>No rooms are available.</p>
+                {% endif %}
+            </div>
+          </div>
+
+        </div>
+
+{% endblock content %}

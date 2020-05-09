@@ -1,26 +1,191 @@
+{% extends 'sensors/base.html' %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'sensors/style.css' %}">
-<link rel="shortcut icon" type="image/png" href="{% static 'sensors/images/favicon.png' %}"/>
 
-{% if room %}
-<h1>{{ room.name }} - {{ room.room_id }} - {{ room.description }}</h1>
+{% block title %}Sala {{ room.name }}{% endblock %}
 
-{% if sensors %}
-<ul>
-    {% for sensor in sensors %}
-    <li>{{ sensor.sensor_id }}</li>
-    <ul>
-        <li>{{ sensor.room_id }}</li>
-        <li>{{ sensor.description }}</li>
-        <li>{{ sensor.type }}</li>
-        <li>{{ sensor.symbol }}</li>
-    </ul>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No sensors are available.</p>
-{% endif %}
+{% block custom-style %}
+    table.table {
+        table-layout: fixed;
+    }
+    table.table tr th, table.table tr td {
+        border-color: #e9e9e9;
+    }
+    table.table th i {
+        font-size: 13px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    table.table th:last-child {
+        width: 100px;
+    }
+    table.table td a {
+		cursor: pointer;
+        display: inline-block;
+        margin: 0 5px;
+		min-width: 24px;
+    }
+	table.table td a.add {
+        color: #27C46B;
+    }
+    table.table td a.edit {
+        color: #FFC107;
+    }
+    table.table td a.delete {
+        color: #E34724;
+    }
+    table.table td i {
+        font-size: 19px;
+    }
+	table.table td a.add i {
+        font-size: 24px;
+    	margin-right: -1px;
+        position: relative;
+        top: 3px;
+    }
+    table.table .form-control {
+        height: 32px;
+        line-height: 32px;
+        box-shadow: none;
+        border-radius: 2px;
+    }
+	table.table .form-control.error {
+		border-color: #f50000;
+	}
+	table.table td .add {
+		display: none;
+	}
+{% endblock %}
 
-{% else %}
-<p>Room not available.</p>
-{% endif %}
+{% block content %}
+
+    <div class="container-fluid">
+
+        {% if room %}
+            <!-- Page Heading -->
+            <h1 class="h2 mb-2 text-gray-800">Sala {{ room.name }}</h1>
+            <br>
+            <form>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <label for="inputDescription">Descrição</label>
+                  <input type="text" class="form-control" id="inputDescription" value="{{ room.description }}" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="inputID">ID</label>
+                  <input type="text" class="form-control" id="inputID" value="{{ room.room_id }}" readonly>
+                </div>
+                <div class="col-md-4">
+                  <button style="margin-top: 32px; padding-bottom: 0px;" type="submit" class="btn btn-primary" id="roomEdit"><i class="material-icons">&#xE254;</i></button>
+                </div>
+              </div>
+            </form>
+            <br>
+            <div style="margin-bottom: 1em;" class="row">
+                <div class="col-sm-11">
+                    <h4 class="mb-2 text-gray-800">Sensores</h4>
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-primary add-new"><i style="padding-right: 5px;" class="fa fa-plus"></i>Adicionar</button>
+                </div>
+            </div>
+            {% if sensors %}
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo de Métrica</th>
+                            <th>Unidades</th>
+                            <th>Descrição</th>
+                            <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sensor in sensors %}
+                            <tr>
+                                <td id="id">{{ sensor.sensor_id }}</td>
+                                <td id="type">{{ sensor.type }}</td>
+                                <td id="symbol">{{ sensor.symbol }}</td>
+                                <td id="description">{{ sensor.description }}</td>
+                                <td>
+                                    <a class="add" style="display: none" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
+                                    <a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                    <a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No sensors are available.</p>
+            {% endif %}
+        {% else %}
+            <p>Room not available.</p>
+        {% endif %}
+
+    </div>
+
+{% endblock content %}
+
+{% block custom-script %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+            var actions = $("table td:last-child").html();
+            // Append table with add row form on add new button click
+            $(".add-new").click(function(){
+                $(this).attr("disabled", "disabled");
+                var index = $("table tbody tr:last-child").index();
+                var row = '<tr>' +
+                    '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Valor Gerado Automaticamente>" readonly></td>' +
+                    '<td id="type"><input type="text" class="form-control" name="Tipo" id="type"></td>' +
+                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="units"></td>' +
+                    '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
+                    '<td>' + actions + '</td>' +
+                '</tr>';
+                $("table").append(row);
+                $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+            // Add row on add button click
+            $(document).on("click", ".add", function(){
+                var empty = false;
+                var input = $(this).parents("tr").find('input[type="text"]');
+                input.each(function(){
+                    if(!$(this).val()){
+                        $(this).addClass("error");
+                        empty = true;
+                    } else{
+                        $(this).removeClass("error");
+                    }
+                });
+                $(this).parents("tr").find(".error").first().focus();
+                if(!empty){
+                    input.each(function(){
+                        $(this).parent("td").html($(this).val());
+                    });
+                    $(this).parents("tr").find(".add, .edit").toggle();
+                    $(".add-new").removeAttr("disabled");
+                }
+            });
+            // Edit row on edit button click
+            $(document).on("click", ".edit", function(){
+                $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                    var html = '<input type="text" class="form-control" value="' + $(this).text() + '">';
+                    if($(this).attr('id') === "id") {
+                        html = html.substring(0, html.length - 1) + " readonly>";
+                    }
+                    $(this).html(html);
+                });
+                $(this).parents("tr").find(".add, .edit").toggle();
+                $(".add-new").attr("disabled", "disabled");
+            });
+            // Delete row on delete button click
+            $(document).on("click", ".delete", function(){
+                $(this).parents("tr").remove();
+                $(".add-new").removeAttr("disabled");
+            });
+        });
+    </script>
+{% endblock %}

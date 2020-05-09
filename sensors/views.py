@@ -119,3 +119,7 @@ class TypesIndexView(generic.ListView):
                     typesList.append(Type(metric=type))
                 return typesList
         return []
+
+
+def template(request):
+    return render(request, "sensors/index.html", {"data": ""})
