@@ -19,19 +19,19 @@
             <h6 class="m-0 font-weight-bold text-primary">DETI</h6>
         </div>
         <div class="card-body">
-            {% if sensors_list %}
+            {% if rooms_list %}
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
-                        <th>Nome</th>
+                        <th>Sala</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for sensor in sensors_list %}
+                    {% for room in rooms_list %}
                     <tr>
                         <td>
-                            <a>{{ sensor.sensor_id }}</a>
+                            <a href="{% url 'sensors:roomDetails' room_id=room.room_id  %}">{{ room }}</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -39,7 +39,7 @@
                 </table>
             </div>
             {% else %}
-            <p>Não existe nenhum sensor disponível.</p>
+            <p>Não existe nenhuma sala disponível.</p>
             {% endif %}
         </div>
     </div>

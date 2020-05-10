@@ -4,48 +4,237 @@
 {% block title %}Salas{% endblock %}
 {% block uname %}{{ uname }}{% endblock %}
 
+{% block custom-style %}
+table.table {
+table-layout: fixed;
+}
+table.table tr th, table.table tr td {
+border-color: #e9e9e9;
+}
+table.table th i {
+font-size: 13px;
+margin: 0 5px;
+cursor: pointer;
+}
+table.table th:last-child {
+width: 80px;
+}
+table.table td a {
+cursor: pointer;
+display: inline-block;
+margin: 0 5px;
+min-width: 24px;
+}
+table.table td button.add, table.table td button#sensorUpdate {
+color: #27C46B;
+}
+table.table td button.edit {
+color: #FFC107;
+}
+table.table td button.delete {
+color: #E34724;
+}
+table.table td button.cancel {
+color: #808080;
+}
+table.table td button.delete {
+color: #E34724;
+}
+table.table td button.delete {
+color: #E34724;
+}
+table.table td i {
+font-size: 19px;
+}
+table.table .form-control {
+height: 32px;
+line-height: 32px;
+box-shadow: none;
+border-radius: 2px;
+}
+table.table .form-control.error {
+border-color: #f50000;
+}
+table.table td .add {
+display: none;
+}
+{% endblock %}
+
 {% block content %}
 
-    <!-- Begin Page Content -->
-        <div class="container-fluid">
+<div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h2 mb-2 text-gray-800">Salas</h1>
-          <br>
-
-          <!-- DataTales Example -->
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">DETI</h6>
-            </div>
-            <div class="card-body">
-                {% if rooms_list %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                          <thead>
-                            <tr>
-                              <th>Nome</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {% for room in rooms_list %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'sensors:roomDetails' room_id=room.room_id  %}">{{ room }}</a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                      </div>
-                {% else %}
-                    <p>Não existe nenhuma sala disponível.</p>
-                {% endif %}
-            </div>
-          </div>
-
+    <!-- Page Heading -->
+    <div style="margin-bottom: 1em;" class="row">
+        <div class="col-sm-11">
+            <h4 class="mb-2 text-gray-800">Salas</h4>
         </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-primary add-new"><i style="padding-right: 5px;" class="fa fa-plus"></i>Adicionar</button>
+        </div>
+    </div>
+    {% if rooms_list %}
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for room in rooms_list %}
+            <tr>
+                <td id="id">{{ room.room_id }}</td>
+                <td id="name">{{ room.name }}</td>
+                <td id="description">{{ room.description }}</td>
+                <td>
+                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
+                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
+                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>Não existe nenhuma sala disponível.</p>
+    {% endif %}
+
+</div>
 
 {% endblock content %}
+
+{% block custom-script %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+        var actions = $("table td:last-child").html();
+        // Append table with add row form on add new button click
+        $(".add-new").click(function(){
+            $(this).attr("disabled", "disabled");
+            $(".edit").attr("disabled", "disabled");
+            $(".delete").attr("disabled", "disabled");
+            var index = $("table tbody tr:last-child").index();
+            var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
+            var row = '<tr>' +
+                '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Gerado Automaticamente>" readonly></td>' +
+                '<td id="name"><input type="text" class="form-control" name="Name" id="name"></td>' +
+                '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
+                '<td>' + actions + '</td>' +
+                '</tr>';
+            $("table").append(row);
+            $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        // Add new row on add button click
+        $(document).on("click", ".add", function(){
+            var empty = false;
+            var input = $(this).parents("tr").find('input[type="text"]');
+            input.each(function(){
+                if(!$(this).val()){
+                    $(this).addClass("error");
+                    empty = true;
+                } else{
+                    $(this).removeClass("error");
+                }
+            });
+            $(this).parents("tr").find(".error").first().focus();
+            if(!empty){
+                input.each(function(){
+                    $(this).parent("td").html($(this).val());
+                });
+                $(this).parents("tr").find(".edit").toggle();
+                $(".add").hide();
+                $(".add-new").removeAttr("disabled");
+                $(".edit").removeAttr("disabled");
+                $(".delete").removeAttr("disabled");
+            }
+        });
+        // Update row on update button click
+        $(document).on("click", "#sensorUpdate", function(){
+            var empty = false;
+            var input = $(this).parents("tr").find('input[type="text"]');
+            input.each(function(){
+                if(!$(this).val()){
+                    $(this).addClass("error");
+                    empty = true;
+                } else{
+                    $(this).removeClass("error");
+                }
+            });
+            $(this).parents("tr").find(".error").first().focus();
+            if(!empty){
+                input.each(function(){
+                    $(this).parent("td").html($(this).val());
+                });
+                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
+                $(".add").hide();
+                $(".add-new").removeAttr("disabled");
+                $(".edit").removeAttr("disabled");
+                $(".delete").removeAttr("disabled");
+            }
+        });
+        var description;
+        var name;
+        var id;
+        // Edit row on edit button click
+        $(document).on("click", "#sensorEdit", function(){
+            $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                // Saving values
+                if($(this).attr('id') === "description") {
+                    description = $(this).text();
+                }
+                if($(this).attr('id') === "name") {
+                    name= $(this).text();
+                }
+                if($(this).attr('id') === "id") {
+                    id = $(this).text();
+                }
+                var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
+                if($(this).attr('id') === "id") {
+                    html = html.substring(0, html.length - 1) + " readonly>";
+                }
+                $(this).html(html);
+            });
+            $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
+            $(".add-new").attr("disabled", "disabled");
+            $(".edit").attr("disabled", "disabled");
+            $(".delete").attr("disabled", "disabled");
+        });
+        // Cancel row on cancel button click
+        $(document).on("click", "#sensorCancel", function(){
+            $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                if($(this).attr('id') === "description") {
+                    $(this).html(description);
+                }
+                if($(this).attr('id') === "name") {
+                    $(this).html(name);
+                }
+                if($(this).attr('id') === "id") {
+                    //$(this).html
+                    $(this).html(id);
+                }
+            });
+            $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete").toggle();
+            $(".add-new").removeAttr('disabled');
+            $(".edit").removeAttr('disabled');
+            $(".delete").removeAttr('disabled');
+        });
+        // Delete row on delete button click
+        $(document).on("click", ".delete", function(){
+            $(this).parents("tr").remove();
+            $(".add-new").removeAttr("disabled");
+            $(".edit").removeAttr("disabled");
+            $(".delete").removeAttr("disabled");
+        });
+    });
+</script>
+{% endblock %}
 
 {% block nav-item %}rooms{% endblock %}

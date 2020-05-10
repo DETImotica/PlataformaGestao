@@ -9,7 +9,8 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('forbidden/', views.forbidden, name='forbidden'),
     path('rooms/', views.RoomsIndexView.as_view(), name='rooms'),
+    path('sensors/', views.SensorsIndexView.as_view(), name='sensors'),
     path('types/', views.TypesIndexView.as_view(), name='types'),
     path('', views.template, name='template'),
-    path('rooms/<slug:room_id>/', views.RoomsIndexView.roomDetails, name="roomDetails"),
+    path('sensors/<slug:room_id>/', views.SensorsIndexView.roomDetails, name="roomDetails"),
 ]
