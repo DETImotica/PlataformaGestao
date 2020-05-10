@@ -18,6 +18,27 @@ class RoomsIndexView(generic.ListView):
             return rooms
         raise Http404("Não existe nenhuma sala")
 
+def loadRooms(self):
+    for i in range(3):
+        requestRoomsID = api_get_request('/rooms', self.request.session)
+        if requestRoomsID.headers["Content-Type"]=="application/json":
+            roomsList = []
+            for room in requestRoomsID.json()["ids"]:
+                request = api_get_request('/room/' + room, self.request.session).json()
+                roomsList.append(Room(room_id=room,name=request['name'],description=request['description']))
+            return roomsList
+    return []
+
+class SensorsIndexView(generic.ListView):
+    template_name = 'sensors/sensors.html'
+    context_object_name = 'rooms_list'
+
+    def get_queryset(self):
+        rooms = loadRooms(self)
+        if rooms != []:
+            return rooms
+        raise Http404("Não existe nenhuma sala")
+
     def loadRoom(session, id):
         for i in range(3):
             requestRoomsID = api_get_request('/rooms', session)
@@ -34,7 +55,6 @@ class RoomsIndexView(generic.ListView):
             requestSensorsID = api_get_request('/room/' + room_id + '/sensors', session)
             if requestSensorsID.headers["Content-Type"]=="application/json":
                 sensorsList = []
-                print(requestSensorsID.json())
                 for sensor in requestSensorsID.json()["ids"]:
                     request = api_get_request('/sensor/' + sensor, session).json()
                     sensorsList.append(Sensor(sensor_id=sensor,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol']))
@@ -42,58 +62,14 @@ class RoomsIndexView(generic.ListView):
         return []
 
     def roomDetails(request, room_id):
-        room = RoomsIndexView.loadRoom(request.session, room_id)
+        room = SensorsIndexView.loadRoom(request.session, room_id)
         if room != []:
-            sensors = RoomsIndexView.loadRoomSensors(request.session, room_id)
+            sensors = SensorsIndexView.loadRoomSensors(request.session, room_id)
             if sensors != []:
                 types = loadTypes(request.session)
                 return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types})
             return render(request, 'sensors/roomDetails.html', {'room': room})
         raise Http404("Sala não existente")
-
-def loadRooms(self):
-    for i in range(3):
-        requestRoomsID = api_get_request('/rooms', self.request.session)
-        if requestRoomsID.headers["Content-Type"]=="application/json":
-            roomsList = []
-            for room in requestRoomsID.json()["ids"]:
-                request = api_get_request('/room/' + room, self.request.session).json()
-                roomsList.append(Room(room_id=room,name=request['name'],description=request['description']))
-            return roomsList
-    return []
-
-class SensorsIndexView(generic.ListView):
-    template_name = 'sensors/sensors.html'
-    context_object_name = 'sensors_list'
-
-    def get_queryset(self):
-        sensors = self.loadSensors()
-        if sensors != []:
-            return sensors
-        raise Http404("Não existe nenhum sensor")
-
-    def loadSensors(self):
-        for i in range(3):
-            requestSensors = api_get_request('/sensors', self.request.session)
-            if requestSensors.headers["Content-Type"]=="application/json":
-                sensorsList = []
-                for sensor in requestSensors.json()["ids"]:
-                    #request = api_get_request('/sensor/' + sensor, self.request.session).json()
-                    sensorsList.append(Sensor(sensor_id=sensor))
-                return sensorsList
-        return []
-
-    def loadSensor(self, id):
-        for i in range(3):
-            requestSensorsID = api_get_request('/sensors', self.request.session)
-            if requestSensorsID.headers["Content-Type"]=="application/json":
-                for sensor in requestSensorsID.json()["ids"]:
-                    if sensor==id:
-                        request = api_get_request('/sensor/' + sensor, self.request.session).json()
-                        print("1")
-                        return Sensor(sensor_id=id,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol'])
-                return []
-        return []
 
 class TypesIndexView(generic.ListView):
     template_name = 'sensors/types.html'

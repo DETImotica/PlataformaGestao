@@ -8,7 +8,8 @@ urlpatterns = [
     path('api_login/', views.api_login, name='api_login'),
     path('logout/', views.logout, name='logout'),
     path('rooms/', views.RoomsIndexView.as_view(), name='rooms'),
+    path('sensors/', views.SensorsIndexView.as_view(), name='sensors'),
     path('types/', views.TypesIndexView.as_view(), name='types'),
     path('', views.template, name='template'),
-    path('rooms/<slug:room_id>/', views.RoomsIndexView.roomDetails, name="roomDetails"),
+    path('sensors/<slug:room_id>/', views.SensorsIndexView.roomDetails, name="roomDetails"),
 ]
