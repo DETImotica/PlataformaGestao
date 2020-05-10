@@ -24,7 +24,7 @@
         margin: 0 5px;
 		min-width: 24px;
     }
-	table.table td button.add {
+	table.table td button.add, table.table td button#sensorUpdate {
         color: #27C46B;
     }
     table.table td button.edit {
@@ -117,7 +117,8 @@
                                 <td id="symbol">{{ sensor.symbol }}</td>
                                 <td id="description">{{ sensor.description }}</td>
                                 <td>
-                                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
+                                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
+                                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
                                     <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
                                     <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
                                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
@@ -147,6 +148,9 @@
             // Append table with add row form on add new button click
             $(".add-new").click(function(){
                 $(this).attr("disabled", "disabled");
+                $(".edit").attr("disabled", "disabled");
+                $(".delete").attr("disabled", "disabled");
+                $(".reveal").attr("disabled", "disabled");
                 var index = $("table tbody tr:last-child").index();
                 html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
                 var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
@@ -155,20 +159,21 @@
                 }
                 html += '</select>';
                 var row = '<tr>' +
-                    '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Valor Gerado Automaticamente>" readonly></td>' +
+                    '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Gerado Automaticamente>" readonly></td>' +
                     '<td id="type">' + html + '</td>' +
                     '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="units"></td>' +
                     '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
                     '<td>' + actions + '</td>' +
                 '</tr>';
                 $("table").append(row);
-                $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+                $("table tbody tr").eq(index + 1).find(".add, .edit, .reveal").toggle();
                 $('[data-toggle="tooltip"]').tooltip();
             });
-            // Add row on add button click
+            // Add new row on add button click
             $(document).on("click", ".add", function(){
                 var empty = false;
                 var input = $(this).parents("tr").find('input[type="text"]');
+                var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
                 input.each(function(){
                     if(!$(this).val()){
                         $(this).addClass("error");
@@ -182,8 +187,44 @@
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
                     });
-                    //$(this).parents("tr").find(".add, .edit").toggle();
+                    dropdown.each(function(){
+                        $(this).parent("td").html($(this).val());
+                    });
+                    $(this).parents("tr").find(".edit, .reveal").toggle();
+                    $(".add").hide();
                     $(".add-new").removeAttr("disabled");
+                    $(".edit").removeAttr("disabled");
+                    $(".delete").removeAttr("disabled");
+                    $(".reveal").removeAttr("disabled");
+                }
+            });
+            // Update row on update button click
+            $(document).on("click", "#sensorUpdate", function(){
+                var empty = false;
+                var input = $(this).parents("tr").find('input[type="text"]');
+                var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
+                input.each(function(){
+                    if(!$(this).val()){
+                        $(this).addClass("error");
+                        empty = true;
+                    } else{
+                        $(this).removeClass("error");
+                    }
+                });
+                $(this).parents("tr").find(".error").first().focus();
+                if(!empty){
+                    input.each(function(){
+                        $(this).parent("td").html($(this).val());
+                    });
+                    dropdown.each(function(){
+                        $(this).parent("td").html($(this).val());
+                    });
+                    $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
+                    $(".add").hide();
+                    $(".add-new").removeAttr("disabled");
+                    $(".edit").removeAttr("disabled");
+                    $(".delete").removeAttr("disabled");
+                    $(".reveal").removeAttr("disabled");
                 }
             });
             var type;
@@ -218,30 +259,18 @@
                         }
                         html += '</select>';
                     } else {
-                        var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '">';
+                        var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
                     }
                     if($(this).attr('id') === "id") {
                         html = html.substring(0, html.length - 1) + " readonly>";
                     }
                     $(this).html(html);
                 });
-                $(this).parents("tr").find(".add, .edit, .cancel, .delete, .reveal").toggle();
+                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
                 $(".add-new").attr("disabled", "disabled");
                 $(".edit").attr("disabled", "disabled");
                 $(".delete").attr("disabled", "disabled");
-            });
-            // Update row on update button click
-            $(document).on("click", "#sensorUpdate", function(){
-                $(this).parents("tr").find("td:not(:last-child)").each(function(){
-                    if($(this).attr('id') === "type") {
-                        $(this).html(document.getElementById("dropdowntype").options[document.getElementById("dropdowntype").selectedIndex].value);
-                    }
-                });
-
-                $(this).parents("tr").find(".add, .cancel, .edit, .delete, .reveal").toggle();
-                $(".add-new").removeAttr('disabled');
-                $(".edit").removeAttr('disabled');
-                $(".delete").removeAttr('disabled');
+                $(".reveal").attr("disabled", "disabled");
             });
             // Cancel row on cancel button click
             $(document).on("click", "#sensorCancel", function(){
@@ -260,15 +289,19 @@
                         $(this).html(id);
                     }
                 });
-                $(this).parents("tr").find(".add, .cancel, .edit, .delete, .reveal").toggle();
+                $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete, .reveal").toggle();
                 $(".add-new").removeAttr('disabled');
                 $(".edit").removeAttr('disabled');
                 $(".delete").removeAttr('disabled');
+                $(".reveal").removeAttr("disabled");
             });
             // Delete row on delete button click
             $(document).on("click", ".delete", function(){
                 $(this).parents("tr").remove();
                 $(".add-new").removeAttr("disabled");
+                $(".edit").removeAttr("disabled");
+                $(".delete").removeAttr("disabled");
+                $(".reveal").removeAttr("disabled");
             });
             $(document).on("click", "#roomEdit", function(){
                 $("#inputDescription").attr("readonly", false);
