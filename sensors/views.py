@@ -123,4 +123,8 @@ def loadTypes():
     return []
 
 def template(request):
-    return render(request, "sensors/index.html", {"data": ""})
+    return render(request, "sensors/index.html")
+
+
+def login(request):
+    return render(request, "sensors/login.html")

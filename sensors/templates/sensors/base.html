@@ -47,7 +47,7 @@
           <hr class="sidebar-divider my-0">
 
           <!-- Nav Item - Dashboard -->
-          <li class="nav-item active">
+          <li class="nav-item" id="nav-home">
             <a class="nav-link" href="/">
               <i class="fas fa-fw fa-tachometer-alt"></i>
               <span>Home</span></a>
@@ -61,10 +61,16 @@
             Inventário
           </div>
 
-          <li class="nav-item">
+          <li class="nav-item" id="nav-rooms">
             <a class="nav-link" href="/rooms">
               <i class="fas fa-fw fa-table"></i>
               <span>Salas</span></a>
+          </li>
+
+          <li class="nav-item" id="nav-types">
+            <a class="nav-link" href="/types">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Tipos de Métricas</span></a>
           </li>
 
           <!-- Divider -->
@@ -76,7 +82,7 @@
           </div>
 
 
-          <li class="nav-item">
+          <li class="nav-item" id="nav-abac">
             <a class="nav-link" href="charts.html">
               <i class="fas fa-fw fa-chart-area"></i>
               <span>Placeholder</span></a>
@@ -171,15 +177,16 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Confirmar Saída</h5>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-body">Selecione o botão "Logout" para confirmar a saída da sessão.</div>
             <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-              <a class="btn btn-primary" href="login.html">Logout</a>
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+              <!-- TODO -->
+              <a class="btn btn-primary" href="/login">Logout</a>
             </div>
           </div>
         </div>
@@ -203,6 +210,10 @@
       <script src="{% static "sensors/js/demo/chart-pie-demo.js" %}"></script>
 
       {% block custom-script %}{% endblock %}
+
+      <script>
+          $("#nav-{% block nav-item %}{% endblock %}").addClass('active');
+      </script>
 
     </body>
 </html>

@@ -75,7 +75,10 @@
                   <input type="text" class="form-control" id="inputID" value="{{ room.room_id }}" readonly>
                 </div>
                 <div class="col-md-4">
-                  <button style="margin-top: 32px; padding-bottom: 0px;" type="submit" class="btn btn-primary" id="roomEdit"><i class="material-icons">&#xE254;</i></button>
+                  <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px;" type="button" class="btn btn-primary" id="roomEdit" ><i class="material-icons">&#xE254;</i></button>
+                  <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" type="submit" class="btn btn-success" id="roomSubmit"><i class="material-icons">check_circle_outline</i></button>
+                  <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" type="button" class="btn btn-secondary" id="roomCancel"><i class="material-icons">cancel</i></button>
+                  <button style="margin-top: 32px; padding-bottom: 0px;" type="button" class="btn btn-danger" id="roomDelete"><i class="material-icons">delete</i></button>
                 </div>
               </div>
             </form>
@@ -186,6 +189,27 @@
                 $(this).parents("tr").remove();
                 $(".add-new").removeAttr("disabled");
             });
+            $(document).on("click", "#roomEdit", function(){
+                $("#inputDescription").attr("readonly", false);
+                $(this).toggle();
+                $("#roomDelete").toggle();
+                $("#roomSubmit").toggle();
+                $("#roomCancel").toggle();
+            });
+            $(document).on("click", "#roomCancel", function(){
+                $("#inputDescription").attr("readonly", true);
+                $("#inputDescription").val("{{ room.description }}");
+                $(this).toggle();
+                $("#roomDelete").toggle();
+                $("#roomSubmit").toggle();
+                $("#roomEdit").toggle();
+            });
+            $(document).on("click", "#roomDelete", function(){
+                // TODO
+                window.location.replace('/rooms');
+            });
         });
     </script>
 {% endblock %}
+
+{% block nav-item %}rooms{% endblock %}
