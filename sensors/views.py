@@ -45,7 +45,8 @@ class RoomsIndexView(generic.ListView):
         if room != []:
             sensors = RoomsIndexView.loadRoomSensors(room_id)
             if sensors != []:
-                return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors})
+                types = loadTypes()
+                return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types})
             return render(request, 'sensors/roomDetails.html', {'room': room})
         raise Http404("Sala não existente")
 

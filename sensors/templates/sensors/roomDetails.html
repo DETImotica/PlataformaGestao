@@ -175,7 +175,12 @@
             // Edit row on edit button click
             $(document).on("click", ".edit", function(){
                 $(this).parents("tr").find("td:not(:last-child)").each(function(){
-                    var html = '<input type="text" class="form-control" value="' + $(this).text() + '">';
+                    if($(this).attr('id') === "type") {
+                        var tipos = "{{ types }}";
+                        var html = '<select id="dropdowntype" class="form-control" name="dropdowntype">{% for type in types %}<option value="{{ type.metric }}">{{ type.metric }}</option>{% endfor %}</select>';
+                    } else {
+                        var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '">';
+                    }
                     if($(this).attr('id') === "id") {
                         html = html.substring(0, html.length - 1) + " readonly>";
                     }
