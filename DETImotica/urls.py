@@ -18,3 +18,6 @@ from django.urls import include, path
 urlpatterns = [
     path('', include('sensors.urls')),
 ]
+
+handler404 = 'sensors.views.handler404'
+handler500 = 'sensors.views.handler500'

@@ -12,7 +12,20 @@ class RoomsIndexView(generic.ListView):
     template_name = 'sensors/rooms.html'
     context_object_name = 'rooms_list'
 
+    def get(self, *args, **kwargs):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+        return super(RoomsIndexView, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(RoomsIndexView, self).get_context_data(**kwargs)
+        ctx['uname'] = self.request.session['uname']
+        return ctx
+
     def get_queryset(self):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+
         rooms = loadRooms(self)
         if rooms != []:
             return rooms
@@ -42,13 +55,16 @@ class RoomsIndexView(generic.ListView):
         return []
 
     def roomDetails(request, room_id):
+        if 'cookies' not in request.session:
+            return redirect('/login')
+
         room = RoomsIndexView.loadRoom(request.session, room_id)
         if room != []:
             sensors = RoomsIndexView.loadRoomSensors(request.session, room_id)
             if sensors != []:
                 types = loadTypes(request.session)
-                return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types})
-            return render(request, 'sensors/roomDetails.html', {'room': room})
+                return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types, 'uname': request.session['uname']})
+            return render(request, 'sensors/roomDetails.html', {'room': room, 'uname': request.session['uname']})
         raise Http404("Sala não existente")
 
 def loadRooms(self):
@@ -65,6 +81,16 @@ def loadRooms(self):
 class SensorsIndexView(generic.ListView):
     template_name = 'sensors/sensors.html'
     context_object_name = 'sensors_list'
+
+    def get(self, *args, **kwargs):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+        return super(SensorsIndexView, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(SensorsIndexView, self).get_context_data(**kwargs)
+        ctx['uname'] = self.request.session['uname']
+        return ctx
 
     def get_queryset(self):
         sensors = self.loadSensors()
@@ -99,6 +125,16 @@ class TypesIndexView(generic.ListView):
     template_name = 'sensors/types.html'
     context_object_name = 'types_list'
 
+    def get(self, *args, **kwargs):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+        return super(TypesIndexView, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(TypesIndexView, self).get_context_data(**kwargs)
+        ctx['uname'] = self.request.session['uname']
+        return ctx
+
     def get_queryset(self):
         types = loadTypes(self.request.session)
         if types != []:
@@ -120,10 +156,11 @@ def template(request):
     if 's' in request.GET:
         request.session['cookies'] = {'session': request.GET['s']}
         request.session['User-Agent'] = request.headers['User-Agent']
+        request.session['uname'] = "Diogo Gomes"
         return redirect('/')
     elif 'cookies' not in request.session:
         return redirect('/login')
-    return render(request, "sensors/index.html")
+    return render(request, "sensors/index.html", {'uname': request.session['uname']})
 
 
 def login(request):
@@ -131,10 +168,16 @@ def login(request):
 
 
 def logout(request):
+    if 'cookies' not in request.session:
+        return redirect('/login')
     for i in range(3):
         api_get_request('/logout', request.session)
     request.session.flush()
     return redirect('/login')
+
+
+def forbidden(request):
+    return render(request, "sensors/forbidden.html")
 
 
 def api_login(request):
@@ -143,3 +186,11 @@ def api_login(request):
 
 def api_get_request(endpoint, session):
     return requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+
+
+def handler404(request, exception):
+    return render(request, 'sensors/404.html', status=404)
+
+
+def handler500(request):
+    return render(request, 'sensors/500.html', status=500)
