@@ -171,7 +171,6 @@
             });
             // Add new row on add button click
             $(document).on("click", ".add", function(){
-                console.log("BBB")
                 var empty = false;
                 var input = $(this).parents("tr").find('input[type="text"]');
                 var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
@@ -201,7 +200,6 @@
             });
             // Update row on update button click
             $(document).on("click", "#sensorUpdate", function(){
-                console.log("UPDATE");
                 var empty = false;
                 var input = $(this).parents("tr").find('input[type="text"]');
                 var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');

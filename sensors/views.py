@@ -94,14 +94,6 @@ class SensorsIndexView(generic.ListView):
                 return []
         return []
 
-    def sensorDetails(request, sensor_id):
-        sensor = SensorsIndexView.loadSensor(sensor_id)
-        if sensor != []:
-            rooms = loadRooms()
-            types = loadTypes()
-            return render(request, 'sensors/sensorDetails.html', {'sensor': sensor, 'rooms': rooms, 'types': types})
-        raise Http404("Sala não existente")
-
 class TypesIndexView(generic.ListView):
     template_name = 'sensors/types.html'
     context_object_name = 'types_list'
