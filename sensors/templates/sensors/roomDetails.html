@@ -111,9 +111,10 @@
                                 <td id="symbol">{{ sensor.symbol }}</td>
                                 <td id="description">{{ sensor.description }}</td>
                                 <td>
-                                    <a class="add" style="display: none" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                                    <a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                    <a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                                    <button class="btn btn-primary add" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
+                                    <button class="btn btn-primary cancel" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
+                                    <button class="btn btn-primary edit" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
+                                    <button class="btn btn-primary delete" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -140,9 +141,15 @@
             $(".add-new").click(function(){
                 $(this).attr("disabled", "disabled");
                 var index = $("table tbody tr:last-child").index();
+                html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
+                var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
+                for (i = 0; i < tipos.length; i++) {
+                    html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '">' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
+                }
+                html += '</select>';
                 var row = '<tr>' +
                     '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Valor Gerado Automaticamente>" readonly></td>' +
-                    '<td id="type"><input type="text" class="form-control" name="Tipo" id="type"></td>' +
+                    '<td id="type">' + html + '</td>' +
                     '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="units"></td>' +
                     '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
                     '<td>' + actions + '</td>' +
@@ -168,16 +175,41 @@
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
                     });
-                    $(this).parents("tr").find(".add, .edit").toggle();
+                    //$(this).parents("tr").find(".add, .edit").toggle();
                     $(".add-new").removeAttr("disabled");
                 }
             });
+            var type;
+            var symbol;
+            var description;
+            var id;
             // Edit row on edit button click
-            $(document).on("click", ".edit", function(){
+            $(document).on("click", "#sensorEdit", function(){
                 $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                    // Saving values
+                    if($(this).attr('id') === "symbol") {
+                        symbol = $(this).text();
+                    }
+                    if($(this).attr('id') === "description") {
+                        description = $(this).text();
+                    }
+                    if($(this).attr('id') === "id") {
+                        id = $(this).text();
+                    }
+                    // Dropdown for metric
                     if($(this).attr('id') === "type") {
-                        var tipos = "{{ types }}";
-                        var html = '<select id="dropdowntype" class="form-control" name="dropdowntype">{% for type in types %}<option value="{{ type.metric }}">{{ type.metric }}</option>{% endfor %}</select>';
+                        var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
+                        var html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
+                        metrica = $(this).text();
+
+                        for (i = 0; i < tipos.length; i++) {
+                            if ($(this).text() == tipos[i].substring(11, tipos[i].length-4)) {
+                                html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '" selected>' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
+                            } else {
+                                html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '">' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
+                            }
+                        }
+                        html += '</select>';
                     } else {
                         var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '">';
                     }
@@ -186,8 +218,45 @@
                     }
                     $(this).html(html);
                 });
-                $(this).parents("tr").find(".add, .edit").toggle();
+                $(this).parents("tr").find(".add, .edit, .cancel, .delete").toggle();
                 $(".add-new").attr("disabled", "disabled");
+                $(".edit").attr("disabled", "disabled");
+                $(".delete").attr("disabled", "disabled");
+            });
+            // Update row on update button click
+            $(document).on("click", "#sensorUpdate", function(){
+                $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                    if($(this).attr('id') === "type") {
+                        $(this).html(document.getElementById("dropdowntype").options[document.getElementById("dropdowntype").selectedIndex].value);
+                    }
+                });
+
+                $(this).parents("tr").find(".add, .cancel, .edit, .delete").toggle();
+                $(".add-new").removeAttr('disabled');
+                $(".edit").removeAttr('disabled');
+                $(".delete").removeAttr('disabled');
+            });
+            // Cancel row on cancel button click
+            $(document).on("click", "#sensorCancel", function(){
+                $(this).parents("tr").find("td:not(:last-child)").each(function(){
+                    if($(this).attr('id') === "type") {
+                        $(this).html(metrica);
+                    }
+                    if($(this).attr('id') === "symbol") {
+                        $(this).html(symbol);
+                    }
+                    if($(this).attr('id') === "description") {
+                        $(this).html(description);
+                    }
+                    if($(this).attr('id') === "id") {
+                        //$(this).html
+                        $(this).html(id);
+                    }
+                });
+                $(this).parents("tr").find(".add, .cancel, .edit, .delete").toggle();
+                $(".add-new").removeAttr('disabled');
+                $(".edit").removeAttr('disabled');
+                $(".delete").removeAttr('disabled');
             });
             // Delete row on delete button click
             $(document).on("click", ".delete", function(){
