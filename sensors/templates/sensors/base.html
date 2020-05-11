@@ -49,7 +49,7 @@
           <!-- Nav Item - Dashboard -->
           <li class="nav-item" id="nav-home">
             <a class="nav-link" href="/">
-              <i class="fas fa-fw fa-tachometer-alt"></i>
+              <i class="fas fa-fw fa-link"></i>
               <span>Home</span></a>
           </li>
 
@@ -63,19 +63,19 @@
 
           <li class="nav-item" id="nav-rooms">
             <a class="nav-link" href="/rooms">
-              <i class="fas fa-fw fa-table"></i>
+              <i class="fas fa-fw fa-building"></i>
               <span>Salas</span></a>
           </li>
 
           <li class="nav-item" id="nav-sensors">
             <a class="nav-link" href="/sensors">
-              <i class="fas fa-fw fa-table"></i>
+              <i class="fas fa-fw fa-microchip"></i>
               <span>Sensores</span></a>
           </li>
 
           <li class="nav-item" id="nav-types">
             <a class="nav-link" href="/types">
-              <i class="fas fa-fw fa-table"></i>
+              <i class="fas fa-fw fa-thermometer-half"></i>
               <span>Tipos de Métricas</span></a>
           </li>
 
@@ -90,7 +90,7 @@
 
           <li class="nav-item" id="nav-abac">
             <a class="nav-link" href="charts.html">
-              <i class="fas fa-fw fa-chart-area"></i>
+              <i class="fas fa-fw fa-lock"></i>
               <span>Placeholder</span></a>
           </li>
 
@@ -99,7 +99,7 @@
 
           <!-- Sidebar Toggler (Sidebar) -->
           <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            <button class="btn btn-link" id="sidebarToggle"></button>
           </div>
 
         </ul>
@@ -178,7 +178,7 @@
         <i class="fas fa-angle-up"></i>
       </a>
 
-        <!-- Logout Modal-->
+      <!-- Logout Modal-->
       <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -191,7 +191,6 @@
             <div class="modal-body">Selecione o botão "Logout" para confirmar a saída da sessão.</div>
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-              <!-- TODO -->
               <a class="btn btn-primary" href="/logout">Logout</a>
             </div>
           </div>
@@ -211,6 +210,13 @@
       {% block custom-script %}{% endblock %}
 
       <script>
+          $.ajaxSetup({
+            error: function(xhr, status, error) {
+                if(status == 401) {
+                    window.location.replace('/logout');
+                }
+            }
+          });
           $("#nav-{% block nav-item %}{% endblock %}").addClass('active');
       </script>
 

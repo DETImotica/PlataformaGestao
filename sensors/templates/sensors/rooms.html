@@ -73,7 +73,7 @@ display: none;
             <button type="button" class="btn btn-primary add-new"><i style="padding-right: 5px;" class="fa fa-plus"></i>Adicionar</button>
         </div>
     </div>
-    {% if rooms_list %}
+
     <div class="table-responsive">
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
@@ -102,7 +102,7 @@ display: none;
             </tbody>
         </table>
     </div>
-    {% else %}
+    {% if not rooms_list %}
     <p>Não existe nenhuma sala disponível.</p>
     {% endif %}
 
