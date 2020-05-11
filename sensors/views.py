@@ -151,7 +151,10 @@ def api_login(request):
 
 
 def api_get_request(endpoint, session):
-    return requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    return requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+
+def api_post_request(endpoint, session, changes):
+    return requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'], json=changes)
 
 
 def handler404(request, exception):
