@@ -115,6 +115,14 @@ display: none;
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
         var actions = $("table td:last-child").html();
+        /*var csrftoken = $('meta[name=csrf-token]').attr('content')
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })*/
         // Append table with add row form on add new button click
         $(".add-new").click(function(){
             $(this).attr("disabled", "disabled");
@@ -172,6 +180,10 @@ display: none;
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
+                    if ($(this).attr('id') === "description")
+                        description = $(this).val();
+                    if ($(this).attr('id') === "name")
+                        name = $(this).val();
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
                 $(".add").hide();

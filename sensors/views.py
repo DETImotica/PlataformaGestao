@@ -195,7 +195,7 @@ def api_get_request(endpoint, session, tries=0):
 
 
 def api_post_request(endpoint, data, session, tries=0):
-    result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, data, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_post_request(endpoint, data, session, tries + 1)
