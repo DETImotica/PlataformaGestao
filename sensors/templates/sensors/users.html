@@ -116,6 +116,7 @@ border-color: #f50000;
         $('[data-toggle="tooltip"]').tooltip();
 
         $(document).on("click", "#userMakeAdmin", function(){
+            var id = $(this).closest("tr").find("#id").text();
             var action = this;
             var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;
             var email = $(this).parents("tr").find("td:not(:last-child)")[1].textContent;
@@ -124,7 +125,12 @@ border-color: #f50000;
             $("#modalText").html("Tem a certeza que pretende adicionar o estatuto de admin ao utilizador selecionado?");
             $("#confirmToggleAdmin").unbind("click");
             $( "#confirmToggleAdmin" ).one( 'click', function(){
-                // TODO - POST REQUEST
+                $.post("/post/user/"+id,
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        admin: "true"
+                    }
+                );
                 $(action).parents("tr").find("#admin").html('Sim');
                 $(action).parents("tr").find(".delete").toggle();
                 $(action).toggle();
@@ -135,6 +141,7 @@ border-color: #f50000;
         });
 
         $(document).on("click", "#userRemoveAdmin", function(){
+            var id = $(this).closest("tr").find("#id").text();
             var action = this;
             var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;
             var email = $(this).parents("tr").find("td:not(:last-child)")[1].textContent;
@@ -143,7 +150,12 @@ border-color: #f50000;
             $("#modalText").html("Tem a certeza que pretende remover o estatuto de admin ao utilizador selecionado?");
             $("#confirmToggleAdmin").unbind("click");
             $( "#confirmToggleAdmin" ).one( 'click', function(){
-                // TODO - POST REQUEST
+                $.post("/post/user/"+id,
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        admin: "false"
+                    }
+                );
                 $(action).parents("tr").find("#admin").html('Não');
                 $(action).parents("tr").find(".add").toggle();
                 $(action).toggle();
