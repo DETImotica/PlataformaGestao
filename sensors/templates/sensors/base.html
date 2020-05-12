@@ -179,11 +179,11 @@
       </a>
 
       <!-- Logout Modal-->
-      <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Confirmar Saída</h5>
+              <h5 class="modal-title" id="logoutModalLabel">Confirmar Saída</h5>
               <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
@@ -192,6 +192,24 @@
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
               <a class="btn btn-primary" href="/logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Modal-->
+      <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="errorModalLabel">Falha na execução da operação</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+              <div class="modal-body"><p>Ocorreu um erro <b id="errorID"></b> na execução do seu pedido.</p><p>Lamentamos o sucedido. Por favor contacte a administração.</p></div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
             </div>
           </div>
         </div>
@@ -212,8 +230,12 @@
       <script>
           $.ajaxSetup({
             error: function(xhr, status, error) {
-                if(status == 401) {
+                if(xhr.status == 401) {
                     window.location.replace('/logout');
+                }
+                else {
+                    $("#errorID").html(xhr.status + ' ' + error);
+                    $("#errorModal").modal('show');
                 }
             }
           });

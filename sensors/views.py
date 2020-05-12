@@ -48,6 +48,18 @@ class SensorsIndexView(generic.ListView):
     template_name = 'sensors/sensors.html'
     context_object_name = 'rooms_list'
 
+    def get(self, *args, **kwargs):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+
+        try:
+            return super(SensorsIndexView, self).get(*args, **kwargs)
+        except ResponseException as r:
+            if r.code == 401:
+                return redirect('/logout')
+            else:
+                raise Exception
+
     def get_queryset(self):
         return loadRooms(self)
 
@@ -159,11 +171,11 @@ class UsersIndexView(generic.ListView):
         return loadUsers(self.request.session)
 
 def loadUsers(session):
-    #requestUsers = api_get_request('/users', session)
-    if True or requestUsers.headers["Content-Type"]=="application/json":
+    requestUsers = api_get_request('/users/full', session)
+    if requestUsers.headers["Content-Type"]=="application/json":
         usersList = []
-        for user in json.loads('{"users": [{"user_id": "e7ac454c-0a77-42ec-a245-7cb27bc0af11", "email": "r.rosmaninho@ua.pt", "admin": false}, {"user_id": "701fdb4f-4bbd-4441-a52e-1b826a9f0a54", "email": "jatt@ua.pt", "admin": false}, {"user_id": "9619cff5-e507-4c90-8571-f15b182d686f", "email": "dgomes@ua.pt", "admin": true}]}')['users']: #requestUsers.json()["users"]:
-            usersList.append(User(user_id=user['user_id'], email=user['email'], admin=user['admin']))
+        for user in requestUsers.json():
+            usersList.append(User(user_id=user['id'], email=user['email'], admin=user['admin']))
         return usersList
     return []
 
@@ -172,7 +184,8 @@ def template(request):
     if 's' in request.GET:
         request.session['cookies'] = {'session': request.GET['s']}
         request.session['User-Agent'] = request.headers['User-Agent']
-        request.session['uname'] = "Diogo Gomes"
+        user = api_get_request('/identity', request.session).json()
+        request.session['uname'] = user['name'] + ' ' + user['surname']
         return redirect('/')
     elif 'cookies' not in request.session:
         return redirect('/login')
