@@ -92,7 +92,7 @@ class SensorsIndexView(generic.ListView):
             if room != []:
                 sensors = SensorsIndexView.loadRoomSensors(request.session, room_id)
                 if sensors != []:
-                    types = loadTypes(request.session)
+                    types = loadTypesInfo(request.session)
                     return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types, 'uname': request.session['uname']})
                 return render(request, 'sensors/roomDetails.html', {'room': room, 'uname': request.session['uname']})
             raise Http404("Sala não existente")
@@ -124,24 +124,16 @@ class TypesIndexView(generic.ListView):
         return ctx
 
     def get_queryset(self):
-        return loadTypes(self.request.session)
-
-def loadTypes(session):
-    requestTypes = api_get_request('/types', session)
-    if requestTypes.headers["Content-Type"]=="application/json":
-        typesList = []
-        for type in requestTypes.json()["types"]:
-            typesList.append(Type(metric=type))
-        return typesList
-    return []
+        return loadTypesInfo(self.request.session)
 
 def loadTypesInfo(session):
     requestTypes = api_get_request('/types', session)
     if requestTypes.headers["Content-Type"]=="application/json":
         typesList = []
+        print(requestTypes.json())
         for id in requestTypes.json()["ids"]:
-            request = api_get_request('/type/' + id, session).json()
-            typesList.append(Type(type_id=id, metric=type,description=request['description'],unities=request['unities']))
+            request = api_get_request('/type/' + str(id), session).json()
+            typesList.append(Type(type_id=id, metric=type,description=request['description'],units=request['units']))
         return typesList
     return []
 
@@ -211,7 +203,7 @@ def postObject(request, object, id):
             'room_id': request.POST.get("room_id"),
             'description': request.POST.get("description"),
             'data': {
-                'symbol': request.POST.get("symbol"),
+                'unit_symbol': request.POST.get("symbol"),
                 'type': request.POST.get("type")
             }
         }

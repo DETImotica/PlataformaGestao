@@ -228,13 +228,15 @@
                             symbol: symbol,
                             description: description,
                             room_id: "{{ room.room_id }}"
+                        },
+                        function() {
+                            window.location.replace(window.location);
                         }
                     );
                     $(".add-new").removeAttr("disabled");
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
                     $(".reveal").removeAttr("disabled");
-                    window.location.replace(window.location);
                 }
             });
             // Update row on update button click

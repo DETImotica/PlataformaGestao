@@ -83,7 +83,7 @@ display: none;
                 <td id="id" style="display: none">{{ type.type_id }}</td>
                 <td id="metric">{{ type.metric }}</td>
                 <td id="description">{{ type.description }}</td>
-                <td id="unities">{{ type.unities }}</td>
+                <td id="units">{{ type.units }}</td>
                 <td>
                     <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
@@ -123,7 +123,7 @@ display: none;
             var row = '<tr>' +
                 '<td id="metric"><input type="text" class="form-control" id="metric"></td>' +
                 '<td id="description"><input type="text" class="form-control" id="description"></td>' +
-                '<td id="unities"><input type="text" class="form-control" id="unities" readonly></td>' +
+                '<td id="units"><input type="text" class="form-control" id="units" readonly></td>' +
                 '<td>' + actions + '</td>' +
                 '</tr>';
             $("table").append(row);
@@ -135,7 +135,7 @@ display: none;
             var empty = false;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
-                if(!$(this).val() && $(this).attr('id') != "unities"){
+                if(!$(this).val() && $(this).attr('id') != "units"){
                     $(this).addClass("error");
                     empty = true;
                 } else{
@@ -172,7 +172,7 @@ display: none;
             var empty = false;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
-                if(!$(this).val() && $(this).attr('id') != "unities" && $(this).attr('id') != "id"){
+                if(!$(this).val() && $(this).attr('id') != "units" && $(this).attr('id') != "id"){
                     $(this).addClass("error");
                     empty = true;
                 } else{
@@ -206,7 +206,7 @@ display: none;
         });
         var description;
         var metric;
-        var unities;
+        var units;
         // Edit row on edit button click
         $(document).on("click", "#sensorEdit", function(){
             $(this).parents("tr").find("td:not(:last-child)").each(function(){
@@ -218,14 +218,14 @@ display: none;
                 if($(this).attr('id') === "metric") {
                     metric = $(this).text();
                 }
-                if($(this).attr('id') === "unities") {
-                    unities = $(this).text();
+                if($(this).attr('id') === "units") {
+                    units = $(this).text();
                 }
                 if($(this).attr('id') === "id") {
                     id = $(this).text();
                 }
                 var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
-                if($(this).attr('id') === "unities") {
+                if($(this).attr('id') === "units") {
                     html = html.substring(0, html.length - 1) + " readonly>";
                 }
                 $(this).html(html);
@@ -244,8 +244,8 @@ display: none;
                 if($(this).attr('id') === "metric") {
                     $(this).html(metric);
                 }
-                if($(this).attr('id') === "unities") {
-                    $(this).html(unities);
+                if($(this).attr('id') === "units") {
+                    $(this).html(units);
                 }
             });
             $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete").toggle();

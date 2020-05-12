@@ -23,10 +23,10 @@ class Sensor(models.Model):
 
 class Type(models.Model):
     managed = False
-    type_id = models.CharField(max_length=36)
+    type_id = models.IntegerField()
     metric = models.CharField(max_length=50)
     description = models.CharField(max_length=50)
-    unities = models.CharField(max_length=50)
+    units = models.CharField(max_length=50)
 
     def __str__(self):
         return self.metric
