@@ -55,9 +55,12 @@
         box-shadow: none;
         border-radius: 2px;
     }
-	.error {
+	table.table .form-control.error {
 		border-color: #f50000;
 	}
+    .error {
+        border-color: #f50000;
+    }
 	table.table td .add {
 		display: none;
 	}
@@ -361,6 +364,7 @@
             $(document).on("click", "#roomEdit", function(){
                 roomDescription = $("#inputDescription").val();
                 $("#inputDescription").attr("readonly", false);
+                $("#inputDescription").attr("placeholder", roomDescription);
                 $(this).toggle();
                 $("#roomDelete").toggle();
                 $("#roomSubmit").toggle();
@@ -369,6 +373,7 @@
             $(document).on("click", "#roomCancel", function(){
                 $("#inputDescription").val(roomDescription);
                 $("#inputDescription").attr("readonly", true);
+                $("#inputDescription").removeClass("error");
                 $(this).toggle();
                 $("#roomDelete").toggle();
                 $("#roomSubmit").toggle();
