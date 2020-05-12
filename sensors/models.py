@@ -24,6 +24,8 @@ class Sensor(models.Model):
 class Type(models.Model):
     managed = False
     metric = models.CharField(max_length=50)
+    description = models.CharField(max_length=50)
+    unities = models.CharField(max_length=50)
 
     def __str__(self):
         return self.metric
