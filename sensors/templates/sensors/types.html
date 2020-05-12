@@ -130,7 +130,7 @@ display: none;
             var empty = false;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
-                if(!$(this).val()){
+                if(!$(this).val() && $(this).attr('id') != "unities"){
                     $(this).addClass("error");
                     empty = true;
                 } else{
@@ -167,7 +167,7 @@ display: none;
             var empty = false;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
-                if(!$(this).val()){
+                if(!$(this).val() && $(this).attr('id') != "unities"){
                     $(this).addClass("error");
                     empty = true;
                 } else{
@@ -201,7 +201,6 @@ display: none;
         });
         var description;
         var metric;
-        var unities;
         // Edit row on edit button click
         $(document).on("click", "#sensorEdit", function(){
             $(this).parents("tr").find("td:not(:last-child)").each(function(){
@@ -212,9 +211,6 @@ display: none;
                 }
                 if($(this).attr('id') === "metric") {
                     metric = $(this).text();
-                }
-                if($(this).attr('id') === "unities") {
-                    unities = $(this).text();
                 }
                 var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
                 if($(this).attr('id') === "unities") {
@@ -235,9 +231,6 @@ display: none;
                 }
                 if($(this).attr('id') === "metric") {
                     $(this).html(metric);
-                }
-                if($(this).attr('id') === "unities") {
-                    $(this).html(unities);
                 }
             });
             $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete").toggle();
