@@ -49,7 +49,7 @@
         box-shadow: none;
         border-radius: 2px;
     }
-	table.table .form-control.error {
+	.error {
 		border-color: #f50000;
 	}
 	table.table td .add {
@@ -77,7 +77,7 @@
                 </div>
                 <div class="col-md-4">
                   <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px;" type="button" class="btn btn-primary" id="roomEdit" ><i class="material-icons">&#xE254;</i></button>
-                  <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" type="submit" class="btn btn-success" id="roomSubmit"><i class="material-icons">check_circle_outline</i></button>
+                  <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" type="button" class="btn btn-success" id="roomSubmit"><i class="material-icons">check_circle_outline</i></button>
                   <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" type="button" class="btn btn-secondary" id="roomCancel"><i class="material-icons">cancel</i></button>
                   <button style="margin-top: 32px; padding-bottom: 0px;" type="button" class="btn btn-danger" id="roomDelete"><i class="material-icons">delete</i></button>
                 </div>
@@ -173,7 +173,7 @@
                 var row = '<tr>' +
                     '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Gerado Automaticamente>" readonly></td>' +
                     '<td id="type">' + html + '</td>' +
-                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="units"></td>' +
+                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="symbol"></td>' +
                     '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
                     '<td>' + actions + '</td>' +
                 '</tr>';
@@ -198,12 +198,30 @@
                 if(!empty){
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
+                        if ($(this).attr('id') === "description") {
+                            description = $(this).val();
+                        }
+                        if ($(this).attr('id') === "symbol") {
+                            symbol = $(this).val();
+                        }
                     });
                     dropdown.each(function(){
                         $(this).parent("td").html($(this).val());
+                        if ($(this).attr('id') === "dropdowntype") {
+                            type = $(this).val();
+                        }
                     });
                     $(this).parents("tr").find(".edit, .reveal").toggle();
                     $(".add").hide();
+                    $.post("/post/sensor/new",
+                        {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            type: type,
+                            symbol: symbol,
+                            description: description,
+                            room_id: "{{ room.room_id }}"
+                        }
+                    );
                     $(".add-new").removeAttr("disabled");
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
@@ -227,12 +245,30 @@
                 if(!empty){
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
+                        if ($(this).attr('id') === "description") {
+                            description = $(this).val();
+                        }
+                        if ($(this).attr('id') === "symbol") {
+                            symbol = $(this).val();
+                        }
                     });
                     dropdown.each(function(){
                         $(this).parent("td").html($(this).val());
+                        if ($(this).attr('id') === "dropdowntype") {
+                            type = $(this).val();
+                        }
                     });
                     $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
                     $(".add").hide();
+                    $.post("/post/sensor/"+id,
+                        {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            type: type,
+                            symbol: symbol,
+                            description: description,
+                            room_id: "{{ room.room_id }}"
+                        }
+                    );
                     $(".add-new").removeAttr("disabled");
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
@@ -271,7 +307,7 @@
                         }
                         html += '</select>';
                     } else {
-                        var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
+                        var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
                     }
                     if($(this).attr('id') === "id") {
                         html = html.substring(0, html.length - 1) + " readonly>";
@@ -315,7 +351,9 @@
                 $(".delete").removeAttr("disabled");
                 $(".reveal").removeAttr("disabled");
             });
+            var roomDescription;
             $(document).on("click", "#roomEdit", function(){
+                roomDescription = $("#inputDescription").val();
                 $("#inputDescription").attr("readonly", false);
                 $(this).toggle();
                 $("#roomDelete").toggle();
@@ -323,16 +361,35 @@
                 $("#roomCancel").toggle();
             });
             $(document).on("click", "#roomCancel", function(){
+                $("#inputDescription").val(roomDescription);
                 $("#inputDescription").attr("readonly", true);
-                $("#inputDescription").val("{{ room.description }}");
                 $(this).toggle();
                 $("#roomDelete").toggle();
                 $("#roomSubmit").toggle();
-                $("#roomEdit").toggle();
+                $("#roomEdit").toggle();;
+            });
+            $(document).on("click", "#roomSubmit", function() {
+                if ($("#inputDescription").val() != "") {
+                    $("#inputDescription").removeClass("error");
+                    $.post("/post/room/{{ room.room_id }}",
+                        {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            name: "{{ room.name }}",
+                            description: $("#inputDescription").val()
+                        }
+                    );
+                    $("#inputDescription").attr("readonly", true);
+                    $(this).toggle();
+                    $("#roomDelete").toggle();
+                    $("#roomEdit").toggle();
+                    $("#roomCancel").toggle();
+                } else {
+                    $("#inputDescription").addClass("error");
+                }
             });
             $(document).on("click", "#roomDelete", function(){
                 // TODO
-                window.location.replace('/rooms');
+                window.location.replace('/sensors');
             });
             $(document).on("click", "#sensorReveal", function(){
                 var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;

@@ -150,9 +150,22 @@ display: none;
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
+                    if ($(this).attr('id') === "description") {
+                        description = $(this).val();
+                    }
+                    if ($(this).attr('id') === "name") {
+                        name = $(this).val();
+                    }
                 });
                 $(this).parents("tr").find(".edit").toggle();
                 $(".add").hide();
+                $.post("/post/room/new",
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        name: name,
+                        description: description
+                    }
+                );
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
@@ -174,13 +187,22 @@ display: none;
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
-                    if ($(this).attr('id') === "description")
+                    if ($(this).attr('id') === "description") {
                         description = $(this).val();
-                    if ($(this).attr('id') === "name")
+                    }
+                    if ($(this).attr('id') === "name") {
                         name = $(this).val();
+                    }
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
                 $(".add").hide();
+                $.post("/post/room/"+id,
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        name: name,
+                        description: description
+                    }
+                );
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
@@ -202,7 +224,7 @@ display: none;
                 if($(this).attr('id') === "id") {
                     id = $(this).text();
                 }
-                var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
+                var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
                 if($(this).attr('id') === "id") {
                     html = html.substring(0, html.length - 1) + " readonly>";
                 }

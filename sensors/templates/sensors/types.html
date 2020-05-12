@@ -72,13 +72,17 @@ display: none;
             <thead>
             <tr>
                 <th>Nome</th>
+                <th>Descrição</th>
+                <th>Unidades</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
             {% for type in types_list %}
             <tr>
-                <td id="description">{{ type.metric }}</td>
+                <td id="metric">{{ type.metric }}</td>
+                <td id="description">{{ type.description }}</td>
+                <td id="unities">{{ type.unities }}</td>
                 <td>
                     <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
@@ -112,7 +116,9 @@ display: none;
             var index = $("table tbody tr:last-child").index();
             var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
             var row = '<tr>' +
-                '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
+                '<td id="metric"><input type="text" class="form-control" id="metric"></td>' +
+                '<td id="description"><input type="text" class="form-control" id="description"></td>' +
+                '<td id="unities"><input type="text" class="form-control" id="unities" readonly></td>' +
                 '<td>' + actions + '</td>' +
                 '</tr>';
             $("table").append(row);
@@ -135,9 +141,22 @@ display: none;
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
+                    if ($(this).attr('id') === "description") {
+                        description = $(this).val();
+                    }
+                    if ($(this).attr('id') === "metric") {
+                        metric = $(this).val();
+                    }
                 });
                 $(this).parents("tr").find(".edit").toggle();
                 $(".add").hide();
+                $.post("/post/type/new",
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        name: metric,
+                        description: description
+                    }
+                );
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
@@ -159,23 +178,48 @@ display: none;
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
+                    if ($(this).attr('id') === "description") {
+                        description = $(this).val();
+                    }
+                    if ($(this).attr('id') === "metric") {
+                        metric = $(this).val();
+                    }
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
                 $(".add").hide();
+                $.post("/post/type/"+metric,
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        name: metric,
+                        description: description
+                    }
+                );
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
             }
         });
         var description;
+        var metric;
+        var unities;
         // Edit row on edit button click
         $(document).on("click", "#sensorEdit", function(){
             $(this).parents("tr").find("td:not(:last-child)").each(function(){
                 // Saving values
+                var idName;
                 if($(this).attr('id') === "description") {
                     description = $(this).text();
                 }
-                var html = '<input type="text" class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
+                if($(this).attr('id') === "metric") {
+                    metric = $(this).text();
+                }
+                if($(this).attr('id') === "unities") {
+                    unities = $(this).text();
+                }
+                var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
+                if($(this).attr('id') === "unities") {
+                    html = html.substring(0, html.length - 1) + " readonly>";
+                }
                 $(this).html(html);
             });
             $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
@@ -188,6 +232,12 @@ display: none;
             $(this).parents("tr").find("td:not(:last-child)").each(function(){
                 if($(this).attr('id') === "description") {
                     $(this).html(description);
+                }
+                if($(this).attr('id') === "metric") {
+                    $(this).html(metric);
+                }
+                if($(this).attr('id') === "unities") {
+                    $(this).html(unities);
                 }
             });
             $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete").toggle();

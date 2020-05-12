@@ -16,5 +16,6 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('forbidden/', views.forbidden, name='forbidden'),
 
-    path('get/key/<slug:uuid>', views.key, name='api_key')
+    path('get/key/<slug:uuid>/', views.key, name='api_key'),
+    path('post/<slug:object>/<slug:id>', views.postObject, name='api_post')
 ]

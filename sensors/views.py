@@ -119,9 +119,18 @@ def loadTypes(session):
     if requestTypes.headers["Content-Type"]=="application/json":
         typesList = []
         for type in requestTypes.json()["types"]:
-            #request = api_get_request('/type/' + type, session).json()
             typesList.append(Type(metric=type))
-        return typesList
+    return typesList
+    return []
+
+def loadTypesInfo(session):
+    requestTypes = api_get_request('/types', session)
+    if requestTypes.headers["Content-Type"]=="application/json":
+        typesList = []
+        for type in requestTypes.json()["types"]:
+            request = api_get_request('/type/' + type, session).json()
+            typesList.append(Type(metric=type,description=request['description'],unities=request['unities']))
+    return typesList
     return []
 
 
@@ -178,6 +187,30 @@ def key(request, uuid):
     except ResponseException as r:
         return HttpResponse(status=r.code)
 
+def postObject(request, object, id):
+    if object == "room" or object == "type":
+        data = {
+            'name': request.POST.get("name"),
+            'description': request.POST.get("description")
+        }
+    elif object == "sensor":
+        data = {
+            'room_id': request.POST.get("room_id"),
+            'description': request.POST.get("description"),
+            'data': {
+                'symbol': request.POST.get("symbol"),
+                'type': request.POST.get("type")
+            }
+        }
+    try:
+        if (id == "new"):
+            print("Create New " + object + ": " + str(data))
+            return HttpResponse(api_post_request('/'+object, data, request.session), content_type='application/json')
+        print("Update " + object + ": " + str(data))
+        return HttpResponse(api_post_request('/'+object+'/' + id, data, request.session), content_type='application/json')
+    except ResponseException as r:
+        return HttpResponse(status=r.code)
+
 
 # Session views
 
@@ -207,7 +240,7 @@ def api_login(request):
 # API Requests - Helper functions
 
 def api_get_request(endpoint, session, tries=0):
-    result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_get_request(endpoint, session, tries + 1)
@@ -218,10 +251,20 @@ def api_get_request(endpoint, session, tries=0):
 
 
 def api_post_request(endpoint, data, session, tries=0):
-    result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_post_request(endpoint, data, session, tries + 1)
+        else:
+            return None
+    else:
+        raise ResponseException(result.status_code)
+
+def api_delete_request(endpoint, session, tries=0):
+    result = requests.delete('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    if result.status_code == 200:
+        if tries < 3:
+            return result if is_json(result.text) else api_delete_request(endpoint, session, tries + 1)
         else:
             return None
     else:
