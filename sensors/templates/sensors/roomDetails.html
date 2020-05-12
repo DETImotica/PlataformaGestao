@@ -409,7 +409,7 @@
                 window.location.replace('/sensors');
             });
             $(document).on("click", "#sensorReveal", function(){
-                var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;
+                var uuid = $(this).closest("tr").find("#id").text();
                 $('#sid').html(uuid);
                 $.get("/get/key/" + uuid, function(data) {
                   $("#key").html(data['key']);

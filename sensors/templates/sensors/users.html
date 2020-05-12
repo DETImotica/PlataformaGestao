@@ -116,10 +116,9 @@ border-color: #f50000;
         $('[data-toggle="tooltip"]').tooltip();
 
         $(document).on("click", "#userMakeAdmin", function(){
-            var id = $(this).closest("tr").find("#id").text();
             var action = this;
-            var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;
-            var email = $(this).parents("tr").find("td:not(:last-child)")[1].textContent;
+            var id = $(this).closest("tr").find("#id").text();
+            var email = $(this).closest("tr").find("#email").text();
             $('#emailModal').html(email);
             $("#adminLabel").html("Confirmar Adição de Admin");
             $("#modalText").html("Tem a certeza que pretende adicionar o estatuto de admin ao utilizador selecionado?");
@@ -141,10 +140,9 @@ border-color: #f50000;
         });
 
         $(document).on("click", "#userRemoveAdmin", function(){
-            var id = $(this).closest("tr").find("#id").text();
             var action = this;
-            var uuid = $(this).parents("tr").find("td:not(:last-child)")[0].textContent;
-            var email = $(this).parents("tr").find("td:not(:last-child)")[1].textContent;
+            var id = $(this).closest("tr").find("#id").text();
+            var email = $(this).closest("tr").find("#email").text();
             $('#emailModal').html(email);
             $("#adminLabel").html("Confirmar Remoção de Admin");
             $("#modalText").html("Tem a certeza que pretende remover o estatuto de admin ao utilizador selecionado?");
