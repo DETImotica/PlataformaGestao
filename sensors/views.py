@@ -133,6 +133,16 @@ def loadTypesInfo(session):
     return typesList
     return []
 
+def loadTypesInfo(session):
+    requestTypes = api_get_request('/types', session)
+    if requestTypes.headers["Content-Type"]=="application/json":
+        typesList = []
+        for type in requestTypes.json()["types"]:
+            request = api_get_request('/type/' + type, session).json()
+            typesList.append(Type(metric=type,description=request['description'],unities=request['unities']))
+    return typesList
+    return []
+
 
 class UsersIndexView(generic.ListView):
     template_name = 'sensors/users.html'
