@@ -202,6 +202,10 @@ def postObject(request, object, id):
                 'type': request.POST.get("type")
             }
         }
+    elif object == "user":
+        data = {
+            'admin': request.POST.get("admin")
+        }
     try:
         if (id == "new"):
             print("Create New " + object + ": " + str(data))
