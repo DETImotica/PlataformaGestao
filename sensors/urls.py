@@ -17,5 +17,6 @@ urlpatterns = [
     path('forbidden/', views.forbidden, name='forbidden'),
 
     path('get/key/<slug:uuid>/', views.key, name='api_key'),
-    path('post/<slug:object>/<slug:id>', views.postObject, name='api_post')
+    path('post/<slug:object>/<slug:id>', views.postObject, name='api_post'),
+    path('delete/<slug:object>/<slug:id>', views.deleteObject, name='api_delete')
 ]

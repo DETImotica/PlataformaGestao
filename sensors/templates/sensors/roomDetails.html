@@ -229,6 +229,7 @@
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
                     $(".reveal").removeAttr("disabled");
+                    window.location.replace(window.location);
                 }
             });
             // Update row on update button click
@@ -349,6 +350,13 @@
             // Delete row on delete button click
             $(document).on("click", ".delete", function(){
                 $(this).parents("tr").remove();
+                if ($(this).closest("tr").find("#id").text()) {
+                    $.post("/delete/sensor/"+$(this).closest("tr").find("#id").text(),
+                        {
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        }
+                    );
+                }
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
@@ -393,7 +401,11 @@
                 }
             });
             $(document).on("click", "#roomDelete", function(){
-                // TODO
+                $.post("/delete/room/{{ room.room_id }}",
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    }
+                );
                 window.location.replace('/sensors');
             });
             $(document).on("click", "#sensorReveal", function(){

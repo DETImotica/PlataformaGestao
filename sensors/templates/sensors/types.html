@@ -80,6 +80,7 @@ display: none;
             <tbody>
             {% for type in types_list %}
             <tr>
+                <td id="id" style="display: none">{{ type.type_id }}</td>
                 <td id="metric">{{ type.metric }}</td>
                 <td id="description">{{ type.description }}</td>
                 <td id="unities">{{ type.unities }}</td>
@@ -167,7 +168,7 @@ display: none;
             var empty = false;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
-                if(!$(this).val() && $(this).attr('id') != "unities"){
+                if(!$(this).val() && $(this).attr('id') != "unities" && $(this).attr('id') != "id"){
                     $(this).addClass("error");
                     empty = true;
                 } else{
@@ -187,7 +188,7 @@ display: none;
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
                 $(".add").hide();
-                $.post("/post/type/"+metric,
+                $.post("/post/type/"+$(this).closest("tr").find("#id").text(),
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: metric,
@@ -215,6 +216,9 @@ display: none;
                 }
                 if($(this).attr('id') === "unities") {
                     unities = $(this).text();
+                }
+                if($(this).attr('id') === "id") {
+                    id = $(this).text();
                 }
                 var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
                 if($(this).attr('id') === "unities") {
@@ -248,6 +252,13 @@ display: none;
         // Delete row on delete button click
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
+            if ($(this).closest("tr").find("#id").text()) {
+                $.post("/delete/type/" + $(this).closest("tr").find("#id").text(),
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    }
+                );
+            }
             $(".add-new").removeAttr("disabled");
             $(".edit").removeAttr("disabled");
             $(".delete").removeAttr("disabled");

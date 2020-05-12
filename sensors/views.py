@@ -120,27 +120,17 @@ def loadTypes(session):
         typesList = []
         for type in requestTypes.json()["types"]:
             typesList.append(Type(metric=type))
-    return typesList
+        return typesList
     return []
 
 def loadTypesInfo(session):
     requestTypes = api_get_request('/types', session)
     if requestTypes.headers["Content-Type"]=="application/json":
         typesList = []
-        for type in requestTypes.json()["types"]:
-            request = api_get_request('/type/' + type, session).json()
-            typesList.append(Type(metric=type,description=request['description'],unities=request['unities']))
-    return typesList
-    return []
-
-def loadTypesInfo(session):
-    requestTypes = api_get_request('/types', session)
-    if requestTypes.headers["Content-Type"]=="application/json":
-        typesList = []
-        for type in requestTypes.json()["types"]:
-            request = api_get_request('/type/' + type, session).json()
-            typesList.append(Type(metric=type,description=request['description'],unities=request['unities']))
-    return typesList
+        for id in requestTypes.json()["ids"]:
+            request = api_get_request('/type/' + id, session).json()
+            typesList.append(Type(type_id=id, metric=type,description=request['description'],unities=request['unities']))
+        return typesList
     return []
 
 
@@ -221,6 +211,12 @@ def postObject(request, object, id):
     except ResponseException as r:
         return HttpResponse(status=r.code)
 
+def deleteObject(request, object, id):
+    try:
+        print("Delete " + object + ": " + str(id))
+        return HttpResponse(api_delete_request('/'+object+'/' + id, request.session), content_type='application/json')
+    except ResponseException as r:
+        return HttpResponse(status=r.code)
 
 # Session views
 
