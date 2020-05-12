@@ -27,3 +27,12 @@ class Type(models.Model):
 
     def __str__(self):
         return self.metric
+
+class User(models.Model):
+    managed = False
+    user_id = models.CharField(max_length=36)
+    email = models.CharField(max_length=50)
+    admin = models.BooleanField()
+
+    def __str__(self):
+        return self.user_id

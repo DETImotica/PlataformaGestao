@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 import requests, json
 
-from .models import Room, Sensor, Type
+from .models import Room, Sensor, Type, User
 
 # Main views
 
@@ -32,13 +32,7 @@ class RoomsIndexView(generic.ListView):
         return ctx
 
     def get_queryset(self):
-        if 'cookies' not in self.request.session:
-            return redirect('/login')
-
-        rooms = loadRooms(self)
-        if rooms != []:
-            return rooms
-        raise Http404("Não existe nenhuma sala")
+        return loadRooms(self)
 
 def loadRooms(self):
     requestRoomsID = api_get_request('/rooms', self.request.session)
@@ -55,10 +49,7 @@ class SensorsIndexView(generic.ListView):
     context_object_name = 'rooms_list'
 
     def get_queryset(self):
-        rooms = loadRooms(self)
-        if rooms != []:
-            return rooms
-        raise Http404("Não existe nenhuma sala")
+        return loadRooms(self)
 
     def loadRoom(session, id):
         requestRoomsID = api_get_request('/rooms', session)
@@ -121,10 +112,7 @@ class TypesIndexView(generic.ListView):
         return ctx
 
     def get_queryset(self):
-        types = loadTypes(self.request.session)
-        if types != []:
-            return types
-        raise Http404("Não existe nenhuma métrica")
+        return loadTypes(self.request.session)
 
 def loadTypes(session):
     requestTypes = api_get_request('/types', session)
@@ -135,6 +123,41 @@ def loadTypes(session):
             typesList.append(Type(metric=type))
         return typesList
     return []
+
+
+class UsersIndexView(generic.ListView):
+    template_name = 'sensors/users.html'
+    context_object_name = 'users_list'
+
+    def get(self, *args, **kwargs):
+        if 'cookies' not in self.request.session:
+            return redirect('/login')
+
+        try:
+            return super(UsersIndexView, self).get(*args, **kwargs)
+        except ResponseException as r:
+            if r.code == 401:
+                return redirect('/logout')
+            else:
+                raise Exception
+
+    def get_context_data(self, **kwargs):
+        ctx = super(UsersIndexView, self).get_context_data(**kwargs)
+        ctx['uname'] = self.request.session['uname']
+        return ctx
+
+    def get_queryset(self):
+        return loadUsers(self.request.session)
+
+def loadUsers(session):
+    #requestUsers = api_get_request('/users', session)
+    if True or requestUsers.headers["Content-Type"]=="application/json":
+        usersList = []
+        for user in json.loads('{"users": [{"user_id": "e7ac454c-0a77-42ec-a245-7cb27bc0af11", "email": "r.rosmaninho@ua.pt", "admin": false}, {"user_id": "701fdb4f-4bbd-4441-a52e-1b826a9f0a54", "email": "jatt@ua.pt", "admin": false}, {"user_id": "9619cff5-e507-4c90-8571-f15b182d686f", "email": "dgomes@ua.pt", "admin": true}]}')['users']: #requestUsers.json()["users"]:
+            usersList.append(User(user_id=user['user_id'], email=user['email'], admin=user['admin']))
+        return usersList
+    return []
+
 
 def template(request):
     if 's' in request.GET:
