@@ -211,9 +211,11 @@ def postObject(request, object, id):
         }
     elif object == "mobile":
         data = {
-            'ruleName': request.POST.get("ruleName"),
+            'title': request.POST.get("subject"),
             'message': request.POST.get("message"),
         }
+        if "sensor" in request.POST:
+            data['evalMatches'] = [{'metric': request.POST.get("sensor")}]
     try:
         if (id == "new"):
             print("Create New " + object + ": " + str(data))

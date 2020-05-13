@@ -118,7 +118,7 @@
                     $.post("/post/mobile/notifications",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
-                            ruleName: document.getElementById("inputSubject").value,
+                            subject: document.getElementById("inputSubject").value,
                             message: document.getElementById("inputBody").value
                         },
                         function() {

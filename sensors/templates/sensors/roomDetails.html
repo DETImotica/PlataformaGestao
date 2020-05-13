@@ -61,6 +61,9 @@
     table.table .form-control[name="error"] {
     border-color: #f50000;
     }
+    #inputSubject[name="error"] {
+    border-color: #f50000;
+    }
     #inputBody[name="error"] {
     border-color: #f50000;
     }
@@ -174,7 +177,8 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body"><p>ID: <b id="nid"></b></p><label for="inputBody">Corpo:</label>
+        <div class="modal-body"><p>ID: <b id="nid"></b></p><label for="inputSubject">Assunto</label>
+                  <input type="text" class="form-control" id="inputSubject" placeholder="Ex: Anúncio de Manutenção" style="margin-bottom: 10px;"><label for="inputBody">Corpo:</label>
                   <textarea type="text" class="form-control input-lg" id="inputBody" placeholder="Ex: No próximo dia..."></textarea></div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
@@ -472,15 +476,23 @@
                 $('#notifyModal').modal('show');
                 $("#sendNotification").unbind("click");
                 $( "#sendNotification" ).bind( 'click', function(){
+                    var sbj = document.getElementById("inputSubject").value;
                     var msg = document.getElementById("inputBody").value;
+                    error = false;
+                    if (sbj.length == 0) {
+                        $('#inputSubject').attr("name","error");
+                        error = true;
+                    }
                     if (msg.length == 0) {
                         $('#inputBody').attr("name","error");
-                        return;
+                        error = true;
                     }
+                    if (error) return;
                     $.post("/post/mobile/notifications",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
-                            ruleName: uuid,
+                            sensor: uuid,
+                            subject: sbj,
                             message: msg
                         },
                         function() {
@@ -491,7 +503,10 @@
                 });
             });
             $('#notifyModal').on('hidden.bs.modal', function () {
+                document.getElementById("inputSubject").value = "";
                 document.getElementById("inputBody").value = "";
+                $('#inputSubject').removeAttr("name");
+                $('#inputBody').removeAttr("name");
           });
         });
     </script>
