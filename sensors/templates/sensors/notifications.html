@@ -91,16 +91,16 @@
 
     </div>
 
-<div class="modal fade" id="revealModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="ModalLabel">Chave de Encriptação AES-128</h5>
+          <h5 class="modal-title" id="notificationModalLabel">Notificação enviada com sucesso</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body"><p>ID: <b id="sid"></b></p><p>Chave: <b id="key"></b></p></div>
+        <div class="modal-body"><p>O anúncio chegará aos utilizadores brevemente.</p></div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
         </div>
@@ -138,7 +138,7 @@
                             body: document.getElementById("inputBody").value
                         },
                         function() {
-                            //TODO
+                            $("#notificationModal").modal('show');
                         }
                     );
                 }
