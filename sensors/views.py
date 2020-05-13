@@ -18,8 +18,10 @@ class RoomsIndexView(generic.ListView):
     context_object_name = 'rooms_list'
 
     def get(self, *args, **kwargs):
-        if 'cookies' not in self.request.session:
+        if 'allow' not in self.request.session:
             return redirect('/login')
+        if not self.request.session['allow']:
+            return redirect('/forbidden')
 
         try:
             return super(RoomsIndexView, self).get(*args, **kwargs)
@@ -51,8 +53,10 @@ class SensorsIndexView(generic.ListView):
     context_object_name = 'rooms_list'
 
     def get(self, *args, **kwargs):
-        if 'cookies' not in self.request.session:
+        if 'allow' not in self.request.session:
             return redirect('/login')
+        if not self.request.session['allow']:
+            return redirect('/forbidden')
 
         try:
             return super(SensorsIndexView, self).get(*args, **kwargs)
@@ -85,8 +89,10 @@ class SensorsIndexView(generic.ListView):
         return []
 
     def roomDetails(request, room_id):
-        if 'cookies' not in request.session:
+        if 'allow' not in request.session:
             return redirect('/login')
+        if not request.session['allow']:
+            return redirect('/forbidden')
 
         try:
             room = SensorsIndexView.loadRoom(request.session, room_id)
@@ -106,8 +112,10 @@ class TypesIndexView(generic.ListView):
     context_object_name = 'types_list'
 
     def get(self, *args, **kwargs):
-        if 'cookies' not in self.request.session:
+        if 'allow' not in self.request.session:
             return redirect('/login')
+        if not self.request.session['allow']:
+            return redirect('/forbidden')
 
         try:
             return super(TypesIndexView, self).get(*args, **kwargs)
@@ -140,8 +148,10 @@ class UsersIndexView(generic.ListView):
     context_object_name = 'users_list'
 
     def get(self, *args, **kwargs):
-        if 'cookies' not in self.request.session:
+        if 'allow' not in self.request.session:
             return redirect('/login')
+        if not self.request.session['allow']:
+            return redirect('/forbidden')
 
         try:
             return super(UsersIndexView, self).get(*args, **kwargs)
@@ -177,9 +187,12 @@ def template(request):
         request.session['User-Agent'] = request.headers['User-Agent']
         user = api_get_request('/identity', request.session).json()
         request.session['uname'] = user['name'] + ' ' + user['surname']
+        request.session['allow'] = True
         return redirect('/')
-    elif 'cookies' not in request.session:
+    elif 'allow' not in request.session:
         return redirect('/login')
+    elif not request.session['allow']:
+        return redirect('/forbidden')
     return render(request, "sensors/index.html", {'uname': request.session['uname']})
 
 # API Requests
@@ -239,7 +252,7 @@ def login(request):
 
 
 def logout(request):
-    if 'cookies' not in request.session:
+    if 'allow' not in request.session:
         return redirect('/login')
     try:
         api_get_request('/logout', request.session)
@@ -251,6 +264,13 @@ def logout(request):
 
 
 def forbidden(request):
+    if 's' in request.GET:
+        request.session['cookies'] = {'session': request.GET['s']}
+        request.session['User-Agent'] = request.headers['User-Agent']
+        user = api_get_request('/identity', request.session).json()
+        request.session['uname'] = user['name'] + ' ' + user['surname']
+        request.session['allow'] = False
+        return redirect('/forbidden')
     return render(request, "sensors/forbidden.html")
 
 
