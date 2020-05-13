@@ -211,7 +211,7 @@ def postObject(request, object, id):
         data = {
             'admin': request.POST.get("admin")
         }
-    elif object == "notification":
+    elif object == "mobile":
         data = {
             'subject': request.POST.get("subject"),
             'body': request.POST.get("body")

@@ -129,9 +129,8 @@
                 } else {
                     document.getElementById("inputBody").removeAttribute("name", "error");
                 }
-                //$(this).find('[name="error"]').first().focus();
                 if(!empty){
-                    $.post("/post/notification/new",
+                    $.post("/post/mobile/notification",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
                             subject: document.getElementById("inputSubject").value,
