@@ -5,10 +5,13 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import generic
 import requests, json
+import asyncio, aiohttp
 
 from .models import Room, Sensor, Type, User
 
 # Main views
+
+loop = None
 
 class RoomsIndexView(generic.ListView):
     template_name = 'sensors/rooms.html'
@@ -38,9 +41,8 @@ def loadRooms(self):
     requestRoomsID = api_get_request('/rooms', self.request.session)
     if requestRoomsID.headers["Content-Type"]=="application/json":
         roomsList = []
-        for room in requestRoomsID.json()["ids"]:
-            request = api_get_request('/room/' + room, self.request.session).json()
-            roomsList.append(Room(room_id=room,name=request['name'],description=request['description']))
+        for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/room', requestRoomsID.json()["ids"], self.request.session)):
+            roomsList.append(Room(room_id=id,name=request['name'],description=request['description']))
         return roomsList
     return []
 
@@ -77,9 +79,8 @@ class SensorsIndexView(generic.ListView):
         requestSensorsID = api_get_request('/room/' + room_id + '/sensors', session)
         if requestSensorsID.headers["Content-Type"]=="application/json":
             sensorsList = []
-            for sensor in requestSensorsID.json()["ids"]:
-                request = api_get_request('/sensor/' + sensor, session).json()
-                sensorsList.append(Sensor(sensor_id=sensor,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol']))
+            for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/sensor', requestSensorsID.json()["ids"], session)):
+                sensorsList.append(Sensor(sensor_id=id,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol']))
             return sensorsList
         return []
 
@@ -128,8 +129,7 @@ def loadTypesInfo(session):
     requestTypes = api_get_request('/types', session)
     if requestTypes.headers["Content-Type"]=="application/json":
         typesList = []
-        for id in requestTypes.json()["ids"]:
-            request = api_get_request('/type/' + str(id), session).json()
+        for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/type', requestTypes.json()["ids"], session)):
             typesList.append(Type(type_id=id, name=request['name'],description=request['description'],units=", ".join(request['units'])))
         return typesList
     return []
@@ -267,6 +267,23 @@ def api_get_request(endpoint, session, tries=0):
     else:
         raise ResponseException(result.status_code)
 
+async def api_get_async(url, id, session):
+    for i in range(3):
+        resp = await session.get(url + '/' + str(id))
+        async with resp as response:
+            if response.status == 200:
+                if is_json(await response.text()):
+                    return (id, await response.json())
+                else:
+                    continue
+            else:
+                raise ResponseException(response.status)
+    return (id, None)
+
+async def api_get_bulk_async(endpoint, ids, session):
+    async with aiohttp.ClientSession(loop=get_async_loop(), headers={'User-Agent': session['User-Agent']}, cookies=session['cookies']) as s:
+        results = await asyncio.gather(*[api_get_async('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, id, s) for id in ids])
+        return results
 
 def api_post_request(endpoint, data, session, tries=0):
     result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
@@ -310,3 +327,12 @@ def handler500(request):
 class ResponseException(Exception):
     def __init__(self, *args):
         self.code = args[0] if args else 500
+
+# Misc. Helper functions
+
+def get_async_loop():
+    global loop
+    if loop is None:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
