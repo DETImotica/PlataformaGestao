@@ -17,7 +17,7 @@
         cursor: pointer;
     }
     table.table th:last-child {
-        width: 110px;
+        width: 140px;
     }
     table.table td a {
 		cursor: pointer;
@@ -40,6 +40,9 @@
     table.table td button.reveal {
         color: #808080;
     }
+    table.table td button.notify {
+        color: #007BFF;
+    }
     table.table td i {
         font-size: 19px;
     }
@@ -56,6 +59,9 @@
         border-color: #f50000;
     }
     table.table .form-control[name="error"] {
+    border-color: #f50000;
+    }
+    #inputBody[name="error"] {
     border-color: #f50000;
     }
     #inputDescription[name="error] {
@@ -101,7 +107,6 @@
                     <button type="button" class="btn btn-primary add-new"><i style="padding-right: 5px;" class="fa fa-plus"></i>Adicionar</button>
                 </div>
             </div>
-            {% if sensors %}
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                       <thead>
@@ -127,14 +132,15 @@
                                     <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
                                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
                                     <button class="btn btn-link reveal table-btn" data-toggle="tooltip" id="sensorReveal"><i class="material-icons">lock</i></button>
+                                    <button class="btn btn-link notify table-btn" data-toggle="tooltip" id="sensorNotify"><i class="material-icons">chat_bubble</i></button>
                                 </td>
                             </tr>
                         {% endfor %}
                       </tbody>
                     </table>
                 </div>
-            {% else %}
-                <p>No sensors are available.</p>
+            {% if not sensors %}
+                <p>Não existem sensores associados</p>
             {% endif %}
         {% else %}
             <p>Room not available.</p>
@@ -142,11 +148,11 @@
 
     </div>
 
-<div class="modal fade" id="revealModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+<div class="modal fade" id="revealModal" tabindex="-1" role="dialog" aria-labelledby="revealModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="ModalLabel">Chave de Encriptação AES-128</h5>
+          <h5 class="modal-title" id="revealModalLabel">Chave de Encriptação AES-128</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
@@ -154,6 +160,25 @@
         <div class="modal-body"><p>ID: <b id="sid"></b></p><p>Chave: <b id="key"></b></p></div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notifyModal" tabindex="-1" role="dialog" aria-labelledby="notifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notifyModalLabel">Enviar notificação aos subscritores</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body"><p>ID: <b id="nid"></b></p><label for="inputBody">Corpo:</label>
+                  <textarea type="text" class="form-control input-lg" id="inputBody" placeholder="Ex: No próximo dia..."></textarea></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+          <a class="btn btn-primary" style="color: white" id="sendNotification">Enviar</a>
         </div>
       </div>
     </div>
@@ -170,13 +195,15 @@
                            <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
                            <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
                            <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
-                           <button class="btn btn-link reveal table-btn" data-toggle="tooltip" id="sensorReveal"><i class="material-icons">lock</i></button>`;
+                           <button class="btn btn-link reveal table-btn" data-toggle="tooltip" id="sensorReveal"><i class="material-icons">lock</i></button>
+                           <button class="btn btn-link notify table-btn" data-toggle="tooltip" id="sensorNotify"><i class="material-icons">chat_bubble</i></button>`;
             // Append table with add row form on add new button click
             $(".add-new").click(function(){
                 $(this).attr("disabled", "disabled");
                 $(".edit").attr("disabled", "disabled");
                 $(".delete").attr("disabled", "disabled");
                 $(".reveal").attr("disabled", "disabled");
+                $(".notify").attr("disabled", "disabled");
                 var index = $("table tbody tr:last-child").index();
                 html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
                 var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
@@ -187,12 +214,12 @@
                 var row = '<tr>' +
                     '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Gerado Automaticamente>" readonly></td>' +
                     '<td id="type">' + html + '</td>' +
-                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="symbol"></td>' +
+                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="symbol" maxlength="3"></td>' +
                     '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
                     '<td>' + actions + '</td>' +
                 '</tr>';
                 $("table").append(row);
-                $("table tbody tr").eq(index + 1).find(".add, .edit, .reveal").toggle();
+                $("table tbody tr").eq(index + 1).find(".add, .edit, .reveal, .notify").toggle();
                 $('[data-toggle="tooltip"]').tooltip();
             });
             // Add new row on add button click
@@ -225,7 +252,7 @@
                             type = $(this).val();
                         }
                     });
-                    $(this).parents("tr").find(".edit, .reveal").toggle();
+                    $(this).parents("tr").find(".edit, .reveal, .notify").toggle();
                     $(".add").hide();
                     $.post("/post/sensor/new",
                         {
@@ -243,6 +270,7 @@
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
                     $(".reveal").removeAttr("disabled");
+                    $(".notify").removeAttr("disabled");
                 }
             });
             // Update row on update button click
@@ -275,7 +303,7 @@
                             type = $(this).val();
                         }
                     });
-                    $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
+                    $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal, .notify").toggle();
                     $(".add").hide();
                     $.post("/post/sensor/"+id,
                         {
@@ -290,6 +318,7 @@
                     $(".edit").removeAttr("disabled");
                     $(".delete").removeAttr("disabled");
                     $(".reveal").removeAttr("disabled");
+                    $(".notify").removeAttr("disabled");
                 }
             });
             var type;
@@ -329,13 +358,17 @@
                     if($(this).attr('id') === "id") {
                         html = html.substring(0, html.length - 1) + " readonly>";
                     }
+                    if($(this).attr('id') === "symbol") {
+                        html = html.substring(0, html.length - 1) + " maxlength=\"3\">";
+                    }
                     $(this).html(html);
                 });
-                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
+                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal, .notify").toggle();
                 $(".add-new").attr("disabled", "disabled");
                 $(".edit").attr("disabled", "disabled");
                 $(".delete").attr("disabled", "disabled");
                 $(".reveal").attr("disabled", "disabled");
+                $(".notify").attr("disabled", "disabled");
             });
             // Cancel row on cancel button click
             $(document).on("click", "#sensorCancel", function(){
@@ -354,11 +387,12 @@
                         $(this).html(id);
                     }
                 });
-                $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete, .reveal").toggle();
+                $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete, .reveal, .notify").toggle();
                 $(".add-new").removeAttr('disabled');
                 $(".edit").removeAttr('disabled');
                 $(".delete").removeAttr('disabled');
                 $(".reveal").removeAttr("disabled");
+                $(".notify").removeAttr("disabled");
             });
             // Delete row on delete button click
             $(document).on("click", ".delete", function(){
@@ -374,6 +408,7 @@
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
                 $(".reveal").removeAttr("disabled");
+                $(".notify").removeAttr("disabled");
             });
             var roomDescription;
             $(document).on("click", "#roomEdit", function(){
@@ -417,9 +452,11 @@
                 $.post("/delete/room/{{ room.room_id }}",
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    function () {
+                        window.location.replace('/sensors');
                     }
                 );
-                window.location.replace('/sensors');
             });
             $(document).on("click", "#sensorReveal", function(){
                 var uuid = $(this).closest("tr").find("#id").text();
@@ -429,6 +466,33 @@
                   $('#revealModal').modal('show');
                 });
             });
+            $(document).on("click", "#sensorNotify", function(){
+                var uuid = $(this).closest("tr").find("#id").text();
+                $('#nid').html(uuid);
+                $('#notifyModal').modal('show');
+                $("#sendNotification").unbind("click");
+                $( "#sendNotification" ).bind( 'click', function(){
+                    var msg = document.getElementById("inputBody").value;
+                    if (msg.length == 0) {
+                        $('#inputBody').attr("name","error");
+                        return;
+                    }
+                    $.post("/post/mobile/notifications",
+                        {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            ruleName: uuid,
+                            message: msg
+                        },
+                        function() {
+                            $("#notificationModal").modal('show');
+                        }
+                    );
+                    $('#notifyModal').modal('hide');
+                });
+            });
+            $('#notifyModal').on('hidden.bs.modal', function () {
+                document.getElementById("inputBody").value = "";
+          });
         });
     </script>
 {% endblock %}

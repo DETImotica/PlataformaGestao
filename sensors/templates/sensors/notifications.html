@@ -71,6 +71,8 @@
             <h1 class="h2 mb-2 text-gray-800">Notificações da Aplicação Mobile</h1>
             <br>
             <h1 class="h5 mb-2 text-gray-800" style="margin-bottom: 15px;">Enviar uma notificação a todos os utilizadores</h1>
+            <h1 class="h6 mb-2 text-gray-800" style="margin-bottom: 15px;">Em alternativa pode enviar uma notificação apenas para os utilizadores que subscreverem atualizações de um determinado sensor na página <a href="/sensors">Sensores</a>.</h1>
+            <br>
             <form>
               <div class="form-row">
                 <div class="form-group col-md-4">
@@ -84,29 +86,12 @@
               <div class="form-row">
                 <div class="form-group form-group-lg col-md-6">
                   <label for="inputBody">Corpo</label>
-                    <textarea type="text" class="form-control input-lg" id="inputBody" placeholder="Ex: No próximo dia..."></textarea>
+                  <textarea type="text" class="form-control input-lg" id="inputBody" placeholder="Ex: No próximo dia..."></textarea>
                 </div>
               </div>
             </form>
 
     </div>
-
-<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="notificationModalLabel">Notificação enviada com sucesso</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body"><p>O anúncio chegará aos utilizadores brevemente.</p></div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
-        </div>
-      </div>
-    </div>
-</div>
 
 {% endblock content %}
 
@@ -130,11 +115,11 @@
                     document.getElementById("inputBody").removeAttribute("name", "error");
                 }
                 if(!empty){
-                    $.post("/post/mobile/notification",
+                    $.post("/post/mobile/notifications",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
-                            subject: document.getElementById("inputSubject").value,
-                            body: document.getElementById("inputBody").value
+                            ruleName: document.getElementById("inputSubject").value,
+                            message: document.getElementById("inputBody").value
                         },
                         function() {
                             $("#notificationModal").modal('show');

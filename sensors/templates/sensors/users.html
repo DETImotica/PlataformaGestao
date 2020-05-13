@@ -100,7 +100,7 @@ border-color: #f50000;
             <tr>
                 <td id="id">{{ user.user_id }}</td>
                 <td id="email">{{ user.email }}</td>
-                <td id="admin">{% if user.admin %}Sim{% else %}Não{% endif %}</td>
+                <td id="admin">{% if user.admin %}<b>Sim</b>{% else %}Não{% endif %}</td>
                 <td>
                     <button class="btn btn-link add table-btn" data-toggle="tooltip" title="Tornar Admin" id="userMakeAdmin" {% if user.admin %}style="display: none"{% endif %}><i class="material-icons">verified_user</i></button>
                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" title="Retirar Admin" id="userRemoveAdmin" {% if not user.admin %}style="display: none"{% endif %}><i class="icon-unverified_user"></i></button>
@@ -156,7 +156,7 @@ border-color: #f50000;
                         admin: "true"
                     }
                 );
-                $(action).parents("tr").find("#admin").html('Sim');
+                $(action).parents("tr").find("#admin").html('<b>Sim</b>');
                 $(action).parents("tr").find(".delete").toggle();
                 $(action).toggle();
                 $('#toggleAdminModal').modal('hide');
@@ -184,7 +184,6 @@ border-color: #f50000;
                 $(action).parents("tr").find(".add").toggle();
                 $(action).toggle();
                 $('#toggleAdminModal').modal('hide');
-                $(this).unbind('click');
             });
             $('#toggleAdminModal').modal('show');
         });

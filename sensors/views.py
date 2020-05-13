@@ -91,10 +91,8 @@ class SensorsIndexView(generic.ListView):
             room = SensorsIndexView.loadRoom(request.session, room_id)
             if room != []:
                 sensors = SensorsIndexView.loadRoomSensors(request.session, room_id)
-                if sensors != []:
-                    types = loadTypesInfo(request.session)
-                    return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types, 'uname': request.session['uname']})
-                return render(request, 'sensors/roomDetails.html', {'room': room, 'uname': request.session['uname']})
+                types = loadTypesInfo(request.session)
+                return render(request, 'sensors/roomDetails.html', {'room': room, 'sensors': sensors, 'types': types, 'uname': request.session['uname']})
             raise Http404("Sala não existente")
         except ResponseException as r:
             if r.code == 401:
@@ -203,7 +201,7 @@ def postObject(request, object, id):
             'room_id': request.POST.get("room_id"),
             'description': request.POST.get("description"),
             'data': {
-                'unit_symbol': request.POST.get("symbol"),
+                'unit_symbol': request.POST.get("symbol")[:3],
                 'type': request.POST.get("type")
             }
         }
@@ -213,8 +211,8 @@ def postObject(request, object, id):
         }
     elif object == "mobile":
         data = {
-            'subject': request.POST.get("subject"),
-            'body': request.POST.get("body")
+            'ruleName': request.POST.get("ruleName"),
+            'message': request.POST.get("message"),
         }
     try:
         if (id == "new"):
