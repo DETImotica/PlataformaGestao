@@ -133,7 +133,7 @@ def loadTypesInfo(session):
         print(requestTypes.json())
         for id in requestTypes.json()["ids"]:
             request = api_get_request('/type/' + str(id), session).json()
-            typesList.append(Type(type_id=id, metric=type,description=request['description'],units=request['units']))
+            typesList.append(Type(type_id=id, name=request['name'],description=request['description'],units=", ".join(request['units'])))
         return typesList
     return []
 
@@ -171,6 +171,8 @@ def loadUsers(session):
         return usersList
     return []
 
+def notifications(request):
+    return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
 
 def template(request):
     if 's' in request.GET:

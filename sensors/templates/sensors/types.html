@@ -40,6 +40,9 @@ color: #808080;
 table.table td i {
 font-size: 19px;
 }
+table.table td i.std_size {
+font-size: 1rem;
+}
 table.table .form-control {
 height: 32px;
 line-height: 32px;
@@ -81,9 +84,9 @@ display: none;
             {% for type in types_list %}
             <tr>
                 <td id="id" style="display: none">{{ type.type_id }}</td>
-                <td id="metric">{{ type.metric }}</td>
+                <td id="name">{{ type.name }}</td>
                 <td id="description">{{ type.description }}</td>
-                <td id="units">{{ type.units }}</td>
+                <td id="units">{% if type.units %}{{ type.units }}{% else %}<i class="std_size">Nenhuma</i>{% endif %}</td>
                 <td>
                     <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
@@ -121,9 +124,9 @@ display: none;
             var index = $("table tbody tr:last-child").index();
             var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
             var row = '<tr>' +
-                '<td id="metric"><input type="text" class="form-control" id="metric"></td>' +
+                '<td id="name"><input type="text" class="form-control" id="name"></td>' +
                 '<td id="description"><input type="text" class="form-control" id="description"></td>' +
-                '<td id="units"><input type="text" class="form-control" id="units" readonly></td>' +
+                '<td id="units"><input type="text" class="form-control" id="units" value="Nenhuma" readonly></td>' +
                 '<td>' + actions + '</td>' +
                 '</tr>';
             $("table").append(row);
@@ -149,8 +152,8 @@ display: none;
                     if ($(this).attr('id') === "description") {
                         description = $(this).val();
                     }
-                    if ($(this).attr('id') === "metric") {
-                        metric = $(this).val();
+                    if ($(this).attr('id') === "name") {
+                        name = $(this).val();
                     }
                 });
                 $(this).parents("tr").find(".edit").toggle();
@@ -158,8 +161,11 @@ display: none;
                 $.post("/post/type/new",
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
-                        name: metric,
+                        name: name,
                         description: description
+                    },
+                    function () {
+                        window.location.replace(window.location);
                     }
                 );
                 $(".add-new").removeAttr("disabled");
@@ -186,8 +192,8 @@ display: none;
                     if ($(this).attr('id') === "description") {
                         description = $(this).val();
                     }
-                    if ($(this).attr('id') === "metric") {
-                        metric = $(this).val();
+                    if ($(this).attr('id') === "name") {
+                        name = $(this).val();
                     }
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
@@ -195,7 +201,7 @@ display: none;
                 $.post("/post/type/"+$(this).closest("tr").find("#id").text(),
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
-                        name: metric,
+                        name: name,
                         description: description
                     }
                 );
@@ -205,7 +211,7 @@ display: none;
             }
         });
         var description;
-        var metric;
+        var name;
         var units;
         // Edit row on edit button click
         $(document).on("click", "#sensorEdit", function(){
@@ -215,8 +221,8 @@ display: none;
                 if($(this).attr('id') === "description") {
                     description = $(this).text();
                 }
-                if($(this).attr('id') === "metric") {
-                    metric = $(this).text();
+                if($(this).attr('id') === "name") {
+                    name = $(this).text();
                 }
                 if($(this).attr('id') === "units") {
                     units = $(this).text();
@@ -241,8 +247,8 @@ display: none;
                 if($(this).attr('id') === "description") {
                     $(this).html(description);
                 }
-                if($(this).attr('id') === "metric") {
-                    $(this).html(metric);
+                if($(this).attr('id') === "name") {
+                    $(this).html(name);
                 }
                 if($(this).attr('id') === "units") {
                     $(this).html(units);

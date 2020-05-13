@@ -9,6 +9,7 @@ urlpatterns = [
     path('sensors/', views.SensorsIndexView.as_view(), name='sensors'),
     path('types/', views.TypesIndexView.as_view(), name='types'),
     path('users/', views.UsersIndexView.as_view(), name='users'),
+    path('notifications/', views.notifications, name='notifications'),
     path('sensors/<slug:room_id>/', views.SensorsIndexView.roomDetails, name="roomDetails"),
 
     path('login/', views.login, name='login'),

@@ -168,12 +168,14 @@ display: none;
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: name,
                         description: description
+                    },
+                    function () {
+                        window.location.replace(window.location);
                     }
                 );
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
-                window.location.replace(window.location);
             }
         });
         // Update row on update button click
