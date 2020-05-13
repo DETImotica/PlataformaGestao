@@ -127,6 +127,12 @@
                     );
                 }
             });
+            $('#notificationModal').on('hidden.bs.modal', function () {
+                document.getElementById("inputSubject").value = "";
+                document.getElementById("inputBody").value = "";
+                $('#inputSubject').removeAttr("name");
+                $('#inputBody').removeAttr("name");
+            });
         });
     </script>
 {% endblock %}

@@ -439,7 +439,7 @@
                     $.post("/post/room/{{ room.room_id }}",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
-                            name: "{{ room.name }}",
+                            name: "{{ room.name|safe }}",
                             description: $("#inputDescription").val()
                         }
                     );
@@ -507,7 +507,7 @@
                 document.getElementById("inputBody").value = "";
                 $('#inputSubject').removeAttr("name");
                 $('#inputBody').removeAttr("name");
-          });
+            });
         });
     </script>
 {% endblock %}

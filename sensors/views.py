@@ -179,6 +179,10 @@ def loadUsers(session):
     return []
 
 def notifications(request):
+    if 'allow' not in request.session:
+        return redirect('/login')
+    if not request.session['allow']:
+        return redirect('/forbidden')
     return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
 
 def template(request):
