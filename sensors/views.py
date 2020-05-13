@@ -130,7 +130,6 @@ def loadTypesInfo(session):
     requestTypes = api_get_request('/types', session)
     if requestTypes.headers["Content-Type"]=="application/json":
         typesList = []
-        print(requestTypes.json())
         for id in requestTypes.json()["ids"]:
             request = api_get_request('/type/' + str(id), session).json()
             typesList.append(Type(type_id=id, name=request['name'],description=request['description'],units=", ".join(request['units'])))
@@ -189,8 +188,7 @@ def template(request):
 
 def key(request, uuid):
     try:
-        return HttpResponse('{"key": "placeholder"}', content_type='application/json')
-        #return HttpResponse(api_get_request('/key/' + uuid, request.session), content_type='application/json')
+        return HttpResponse(api_get_request('/sensor/' + uuid + '/key', request.session), content_type='application/json')
     except ResponseException as r:
         return HttpResponse(status=r.code)
 
