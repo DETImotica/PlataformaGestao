@@ -49,6 +49,9 @@
         box-shadow: none;
         border-radius: 2px;
     }
+    .form-control[name="error"] {
+    border-color: #f50000;
+    }
 	table.table .form-control.error {
 		border-color: #f50000;
 	}
@@ -72,7 +75,7 @@
               <div class="form-row">
                 <div class="form-group col-md-4">
                   <label for="inputSubject">Assunto</label>
-                  <input type="text" class="form-control" id="inputSubject" value="{{ room.description }}">
+                  <input type="text" class="form-control" id="inputSubject" placeholder="Ex: Anúncio de Manutenção">
                 </div>
                 <div class="col-md-2">
                   <button style="margin-top: 32px; margin-left: 4px; padding-top: 9px; padding-bottom: 9px" type="button" class="btn btn-success" id="notificationsSubmit"><b>Enviar</b></button>
@@ -81,7 +84,7 @@
               <div class="form-row">
                 <div class="form-group form-group-lg col-md-6">
                   <label for="inputBody">Corpo</label>
-                    <textarea type="text" class="form-control input-lg" id="inputBody" value="{{ room.room_id }}"></textarea>
+                    <textarea type="text" class="form-control input-lg" id="inputBody" placeholder="Ex: No próximo dia..."></textarea>
                 </div>
               </div>
             </form>
@@ -111,269 +114,34 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
-            var actions = `<button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
-                           <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
-                           <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
-                           <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
-                           <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
-                           <button class="btn btn-link reveal table-btn" data-toggle="tooltip" id="sensorReveal"><i class="material-icons">lock</i></button>`;
-            // Append table with add row form on add new button click
-            $(".add-new").click(function(){
-                $(this).attr("disabled", "disabled");
-                $(".edit").attr("disabled", "disabled");
-                $(".delete").attr("disabled", "disabled");
-                $(".reveal").attr("disabled", "disabled");
-                var index = $("table tbody tr:last-child").index();
-                html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
-                var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
-                for (i = 0; i < tipos.length; i++) {
-                    html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '">' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
-                }
-                html += '</select>';
-                var row = '<tr>' +
-                    '<td id="id"><input type="text" class="form-control" name="ID" id="id" value="<Gerado Automaticamente>" readonly></td>' +
-                    '<td id="type">' + html + '</td>' +
-                    '<td id="symbol"><input type="text" class="form-control" name="Unidades" id="symbol"></td>' +
-                    '<td id="description"><input type="text" class="form-control" name="Descrição" id="description"></td>' +
-                    '<td>' + actions + '</td>' +
-                '</tr>';
-                $("table").append(row);
-                $("table tbody tr").eq(index + 1).find(".add, .edit, .reveal").toggle();
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-            // Add new row on add button click
-            $(document).on("click", ".add", function(){
+            // Send message on submit button click
+            $(document).on("click", "#notificationsSubmit", function(){
                 var empty = false;
-                var input = $(this).parents("tr").find('input[type="text"]');
-                var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
-                input.each(function(){
-                    if(!$(this).val()){
-                        $(this).addClass("error");
-                        empty = true;
-                    } else{
-                        $(this).removeClass("error");
-                    }
-                });
-                $(this).parents("tr").find(".error").first().focus();
+                if (!document.getElementById("inputSubject").value) {
+                    document.getElementById("inputSubject").setAttribute("name", "error");
+                    empty = true;
+                } else {
+                    document.getElementById("inputSubject").removeAttribute("name", "error");
+                }
+                if (!document.getElementById("inputBody").value) {
+                    document.getElementById("inputBody").setAttribute("name", "error");
+                    empty = true;
+                } else {
+                    document.getElementById("inputBody").removeAttribute("name", "error");
+                }
+                //$(this).find('[name="error"]').first().focus();
                 if(!empty){
-                    input.each(function(){
-                        $(this).parent("td").html($(this).val());
-                        if ($(this).attr('id') === "description") {
-                            description = $(this).val();
-                        }
-                        if ($(this).attr('id') === "symbol") {
-                            symbol = $(this).val();
-                        }
-                    });
-                    dropdown.each(function(){
-                        $(this).parent("td").html($(this).val());
-                        if ($(this).attr('id') === "dropdowntype") {
-                            type = $(this).val();
-                        }
-                    });
-                    $(this).parents("tr").find(".edit, .reveal").toggle();
-                    $(".add").hide();
-                    $.post("/post/sensor/new",
+                    $.post("/post/notification/new",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
-                            type: type,
-                            symbol: symbol,
-                            description: description,
-                            room_id: "{{ room.room_id }}"
+                            subject: document.getElementById("inputSubject").value,
+                            body: document.getElementById("inputBody").value
                         },
                         function() {
-                            window.location.replace(window.location);
-                        }
-                    );
-                    $(".add-new").removeAttr("disabled");
-                    $(".edit").removeAttr("disabled");
-                    $(".delete").removeAttr("disabled");
-                    $(".reveal").removeAttr("disabled");
-                }
-            });
-            // Update row on update button click
-            $(document).on("click", "#sensorUpdate", function(){
-                var empty = false;
-                var input = $(this).parents("tr").find('input[type="text"]');
-                var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
-                input.each(function(){
-                    if(!$(this).val()){
-                        $(this).addClass("error");
-                        empty = true;
-                    } else{
-                        $(this).removeClass("error");
-                    }
-                });
-                $(this).parents("tr").find(".error").first().focus();
-                if(!empty){
-                    input.each(function(){
-                        $(this).parent("td").html($(this).val());
-                        if ($(this).attr('id') === "description") {
-                            description = $(this).val();
-                        }
-                        if ($(this).attr('id') === "symbol") {
-                            symbol = $(this).val();
-                        }
-                    });
-                    dropdown.each(function(){
-                        $(this).parent("td").html($(this).val());
-                        if ($(this).attr('id') === "dropdowntype") {
-                            type = $(this).val();
-                        }
-                    });
-                    $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
-                    $(".add").hide();
-                    $.post("/post/sensor/"+id,
-                        {
-                            csrfmiddlewaretoken: '{{ csrf_token }}',
-                            type: type,
-                            symbol: symbol,
-                            description: description,
-                            room_id: "{{ room.room_id }}"
-                        }
-                    );
-                    $(".add-new").removeAttr("disabled");
-                    $(".edit").removeAttr("disabled");
-                    $(".delete").removeAttr("disabled");
-                    $(".reveal").removeAttr("disabled");
-                }
-            });
-            var type;
-            var symbol;
-            var description;
-            var id;
-            // Edit row on edit button click
-            $(document).on("click", "#sensorEdit", function(){
-                $(this).parents("tr").find("td:not(:last-child)").each(function(){
-                    // Saving values
-                    if($(this).attr('id') === "symbol") {
-                        symbol = $(this).text();
-                    }
-                    if($(this).attr('id') === "description") {
-                        description = $(this).text();
-                    }
-                    if($(this).attr('id') === "id") {
-                        id = $(this).text();
-                    }
-                    // Dropdown for metric
-                    if($(this).attr('id') === "type") {
-                        var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
-                        var html = '<select id="dropdowntype" class="form-control" name="dropdowntype">';
-                        metrica = $(this).text();
-
-                        for (i = 0; i < tipos.length; i++) {
-                            if ($(this).text() == tipos[i].substring(11, tipos[i].length-4)) {
-                                html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '" selected>' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
-                            } else {
-                                html += '<option value="' + tipos[i].substring(11, tipos[i].length-4) + '">' + tipos[i].substring(11, tipos[i].length-4) + '</option>'
-                            }
-                        }
-                        html += '</select>';
-                    } else {
-                        var html = '<input type="text" id=' + $(this).attr('id') + ' class="form-control" placeholder="' + $(this).text() + '" value="' + $(this).text() + '" required>';
-                    }
-                    if($(this).attr('id') === "id") {
-                        html = html.substring(0, html.length - 1) + " readonly>";
-                    }
-                    $(this).html(html);
-                });
-                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .reveal").toggle();
-                $(".add-new").attr("disabled", "disabled");
-                $(".edit").attr("disabled", "disabled");
-                $(".delete").attr("disabled", "disabled");
-                $(".reveal").attr("disabled", "disabled");
-            });
-            // Cancel row on cancel button click
-            $(document).on("click", "#sensorCancel", function(){
-                $(this).parents("tr").find("td:not(:last-child)").each(function(){
-                    if($(this).attr('id') === "type") {
-                        $(this).html(metrica);
-                    }
-                    if($(this).attr('id') === "symbol") {
-                        $(this).html(symbol);
-                    }
-                    if($(this).attr('id') === "description") {
-                        $(this).html(description);
-                    }
-                    if($(this).attr('id') === "id") {
-                        //$(this).html
-                        $(this).html(id);
-                    }
-                });
-                $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete, .reveal").toggle();
-                $(".add-new").removeAttr('disabled');
-                $(".edit").removeAttr('disabled');
-                $(".delete").removeAttr('disabled');
-                $(".reveal").removeAttr("disabled");
-            });
-            // Delete row on delete button click
-            $(document).on("click", ".delete", function(){
-                $(this).parents("tr").remove();
-                if ($(this).closest("tr").find("#id").text()) {
-                    $.post("/delete/sensor/"+$(this).closest("tr").find("#id").text(),
-                        {
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                            //TODO
                         }
                     );
                 }
-                $(".add-new").removeAttr("disabled");
-                $(".edit").removeAttr("disabled");
-                $(".delete").removeAttr("disabled");
-                $(".reveal").removeAttr("disabled");
-            });
-            var roomDescription;
-            $(document).on("click", "#roomEdit", function(){
-                roomDescription = $("#inputDescription").val();
-                $("#inputDescription").attr("readonly", false);
-                $("#inputDescription").attr("placeholder", roomDescription);
-                $(this).toggle();
-                $("#roomDelete").toggle();
-                $("#roomSubmit").toggle();
-                $("#roomCancel").toggle();
-            });
-            $(document).on("click", "#roomCancel", function(){
-                $("#inputDescription").val(roomDescription);
-                $("#inputDescription").attr("readonly", true);
-                $("#inputDescription").removeClass("error");
-                $(this).toggle();
-                $("#roomDelete").toggle();
-                $("#roomSubmit").toggle();
-                $("#roomEdit").toggle();;
-            });
-            $(document).on("click", "#roomSubmit", function() {
-                if ($("#inputDescription").val() != "") {
-                    $("#inputDescription").removeClass("error");
-                    $.post("/post/room/{{ room.room_id }}",
-                        {
-                            csrfmiddlewaretoken: '{{ csrf_token }}',
-                            name: "{{ room.name }}",
-                            description: $("#inputDescription").val()
-                        }
-                    );
-                    $("#inputDescription").attr("readonly", true);
-                    $(this).toggle();
-                    $("#roomDelete").toggle();
-                    $("#roomEdit").toggle();
-                    $("#roomCancel").toggle();
-                } else {
-                    $("#inputDescription").addClass("error");
-                }
-            });
-            $(document).on("click", "#roomDelete", function(){
-                $.post("/delete/room/{{ room.room_id }}",
-                    {
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    }
-                );
-                window.location.replace('/sensors');
-            });
-            $(document).on("click", "#sensorReveal", function(){
-                var uuid = $(this).closest("tr").find("#id").text();
-                $('#sid').html(uuid);
-                $.get("/get/key/" + uuid, function(data) {
-                  $("#key").html(data['key']);
-                  $('#revealModal').modal('show');
-                });
             });
         });
     </script>

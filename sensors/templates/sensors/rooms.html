@@ -49,6 +49,9 @@ border-radius: 2px;
 table.table .form-control.error {
 border-color: #f50000;
 }
+table.table .form-control[name="error"] {
+border-color: #f50000;
+}
 table.table td .add {
 display: none;
 }
@@ -144,13 +147,13 @@ display: none;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
                 if(!$(this).val()){
-                    $(this).addClass("error");
+                    $(this).attr("name","error");
                     empty = true;
                 } else{
-                    $(this).removeClass("error");
+                    $(this).removeAttr("name","error");
                 }
             });
-            $(this).parents("tr").find(".error").first().focus();
+            $(this).parents("tr").find('input[name="error"]').first().focus();
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());
@@ -184,13 +187,13 @@ display: none;
             var input = $(this).parents("tr").find('input[type="text"]');
             input.each(function(){
                 if(!$(this).val()){
-                    $(this).addClass("error");
+                    $(this).attr("name","error");
                     empty = true;
                 } else{
-                    $(this).removeClass("error");
+                    $(this).removeAttr("name","error");
                 }
             });
-            $(this).parents("tr").find(".error").first().focus();
+            $(this).parents("tr").find('input[name="error"]').first().focus();
             if(!empty){
                 input.each(function(){
                     $(this).parent("td").html($(this).val());

@@ -213,6 +213,11 @@ def postObject(request, object, id):
         data = {
             'admin': request.POST.get("admin")
         }
+    elif object == "notification":
+        data = {
+            'subject': request.POST.get("subject"),
+            'body': request.POST.get("body")
+        }
     try:
         if (id == "new"):
             print("Create New " + object + ": " + str(data))
@@ -278,7 +283,7 @@ def api_post_request(endpoint, data, session, tries=0):
         raise ResponseException(result.status_code)
 
 def api_delete_request(endpoint, session, tries=0):
-    result = requests.delete('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, verify=False, cookies=session['cookies'])
+    result = requests.delete('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_delete_request(endpoint, session, tries + 1)

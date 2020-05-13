@@ -55,6 +55,12 @@
     .error {
         border-color: #f50000;
     }
+    table.table .form-control[name="error"] {
+    border-color: #f50000;
+    }
+    #inputDescription[name="error] {
+    border-color: #f50000;
+    }
 	table.table td .add {
 		display: none;
 	}
@@ -196,13 +202,13 @@
                 var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
                 input.each(function(){
                     if(!$(this).val()){
-                        $(this).addClass("error");
+                        $(this).attr("name","error");
                         empty = true;
                     } else{
-                        $(this).removeClass("error");
+                        $(this).removeAttr("name","error");
                     }
                 });
-                $(this).parents("tr").find(".error").first().focus();
+                $(this).parents("tr").find('input[name="error"]').first().focus();
                 if(!empty){
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
@@ -246,13 +252,13 @@
                 var dropdown = $(this).parents("tr").find('select[id="dropdowntype"]');
                 input.each(function(){
                     if(!$(this).val()){
-                        $(this).addClass("error");
+                        $(this).attr("name","error");
                         empty = true;
                     } else{
-                        $(this).removeClass("error");
+                        $(this).removeAttr("name","error");
                     }
                 });
-                $(this).parents("tr").find(".error").first().focus();
+                $(this).parents("tr").find('input[name="error"]').first().focus();
                 if(!empty){
                     input.each(function(){
                         $(this).parent("td").html($(this).val());
@@ -390,7 +396,7 @@
             });
             $(document).on("click", "#roomSubmit", function() {
                 if ($("#inputDescription").val() != "") {
-                    $("#inputDescription").removeClass("error");
+                    $("#inputDescription").removeAttr("name","error");
                     $.post("/post/room/{{ room.room_id }}",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -404,7 +410,7 @@
                     $("#roomEdit").toggle();
                     $("#roomCancel").toggle();
                 } else {
-                    $("#inputDescription").addClass("error");
+                    $("#inputDescription").attr("name","error");
                 }
             });
             $(document).on("click", "#roomDelete", function(){
