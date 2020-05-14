@@ -85,6 +85,7 @@ class SensorsIndexView(generic.ListView):
             sensorsList = []
             for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/sensor', requestSensorsID.json()["ids"], session)):
                 sensorsList.append(Sensor(sensor_id=id,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol']))
+            sensorsList.sort(key=lambda s: (s.type.lower(), s.symbol.lower(), s.description.lower()))
             return sensorsList
         return []
 
@@ -146,6 +147,7 @@ def loadTypesInfo(session):
         typesList = []
         for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/type', requestTypes.json()["ids"], session)):
             typesList.append(Type(type_id=id, name=request['name'],description=request['description'],units=", ".join(request['units'])))
+        typesList.sort(key=lambda t: t.name)
         return typesList
     return []
 

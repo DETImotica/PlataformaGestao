@@ -193,35 +193,6 @@
 {% block custom-script %}
     <script type="text/javascript">
         $(document).ready(function(){
-            var table, rows, switching, i, x, y, shouldSwitch;
-            table = document.getElementById("dataTable");
-            switching = true;
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    for (j = 1; j < rows[i].cells.length; j++) {
-                        x = rows[i].getElementsByTagName("TD")[j];
-                        y = rows[i + 1].getElementsByTagName("TD")[j];
-                        if (x.innerHTML.toLowerCase() >= y.innerHTML.toLowerCase()) {
-                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                                shouldSwitch = true;
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    if (shouldSwitch) {
-                        break;
-                    }
-                }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                }
-            }
             $('[data-toggle="tooltip"]').tooltip();
             var actions = `<button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                            <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
