@@ -88,6 +88,13 @@ class SensorsIndexView(generic.ListView):
             return sensorsList
         return []
 
+    def deleteRoomSensors(request, room_id):
+        requestSensorsID = api_get_request('/room/' + room_id + '/sensors', request.session)
+        if requestSensorsID.headers["Content-Type"]=="application/json":
+            for (id, req) in get_async_loop().run_until_complete(api_get_bulk_async('/sensor', requestSensorsID.json()["ids"], request.session)):
+                deleteObject(request, "sensor", id)
+        return []
+
     def roomDetails(request, room_id):
         if 'allow' not in request.session:
             return redirect('/login')
@@ -245,6 +252,8 @@ def postObject(request, object, id):
 def deleteObject(request, object, id):
     try:
         print("Delete " + object + ": " + str(id))
+        if object == "room":
+            SensorsIndexView.deleteRoomSensors(request, id)
         return HttpResponse(api_delete_request('/'+object+'/' + id, request.session), content_type='application/json')
     except ResponseException as r:
         return HttpResponse(status=r.code)
