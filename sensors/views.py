@@ -92,8 +92,7 @@ class SensorsIndexView(generic.ListView):
     def deleteRoomSensors(request, room_id):
         requestSensorsID = api_get_request('/room/' + room_id + '/sensors', request.session)
         if requestSensorsID.headers["Content-Type"]=="application/json":
-            for (id, req) in get_async_loop().run_until_complete(api_get_bulk_async('/sensor', requestSensorsID.json()["ids"], request.session)):
-                deleteObject(request, "sensor", id)
+            get_async_loop().run_until_complete(api_delete_bulk_async('/sensor', requestSensorsID.json()["ids"], request.session))
         return []
 
     def roomDetails(request, room_id):
@@ -317,9 +316,28 @@ async def api_get_async(url, id, session):
                 raise ResponseException(response.status)
     return (id, None)
 
+
+async def api_delete_async(url, id, session):
+    for i in range(3):
+        resp = await session.delete(url + '/' + str(id))
+        async with resp as response:
+            if response.status == 200:
+                if is_json(await response.text()):
+                    return
+                else:
+                    continue
+            else:
+                raise ResponseException(response.status)
+    return
+
 async def api_get_bulk_async(endpoint, ids, session):
     async with aiohttp.ClientSession(loop=get_async_loop(), headers={'User-Agent': session['User-Agent']}, cookies=session['cookies']) as s:
         results = await asyncio.gather(*[api_get_async('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, id, s) for id in ids])
+        return results
+
+async def api_delete_bulk_async(endpoint, ids, session):
+    async with aiohttp.ClientSession(loop=get_async_loop(), headers={'User-Agent': session['User-Agent']}, cookies=session['cookies']) as s:
+        results = await asyncio.gather(*[api_delete_async('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, id, s) for id in ids])
         return results
 
 def api_post_request(endpoint, data, session, tries=0):
