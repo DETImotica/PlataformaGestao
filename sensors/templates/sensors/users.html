@@ -139,8 +139,6 @@ border-color: #f50000;
 {% block custom-script %}
 <script type="text/javascript">
     $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-
         $(document).on("click", "#userMakeAdmin", function(){
             var action = this;
             var id = $(this).closest("tr").find("#id").text();

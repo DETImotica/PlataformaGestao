@@ -17,7 +17,7 @@ margin: 0 5px;
 cursor: pointer;
 }
 table.table th:last-child {
-width: 80px;
+width: 110px;
 }
 table.table td a {
 cursor: pointer;
@@ -35,6 +35,9 @@ table.table td button.delete {
 color: #E34724;
 }
 table.table td button.cancel {
+color: #808080;
+}
+table.table td button.abac {
 color: #808080;
 }
 table.table td i {
@@ -91,11 +94,12 @@ display: none;
                 <td id="description">{{ type.description }}</td>
                 <td id="units">{% if type.units %}{{ type.units }}{% else %}<i class="std_size">Nenhuma</i>{% endif %}</td>
                 <td>
-                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
-                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
-                    <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
-                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
-                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
+                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip" title="Submeter"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate" title="Submeter"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel" title="Cancelar"><i class="material-icons">cancel</i></button>
+                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit" title="Editar"><i class="material-icons">&#xE254;</i></button>
+                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete" title="Apagar"><i class="material-icons">&#xE872;</i></button>
+                    <a style="margin-left: 0px; margin-right: 0px" href="/abac/type/{{ type.type_id }}"><button class="btn btn-link abac table-btn" data-toggle="tooltip" id="sensorABAC" title="Controlo de Acessos"><i class="material-icons">lock</i></button></a>
                 </td>
             </tr>
             {% endfor %}
@@ -113,17 +117,18 @@ display: none;
 {% block custom-script %}
 <script type="text/javascript">
     $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
         var actions = `<button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
                     <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
-                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>`;
+                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
+                    <button class="btn btn-link abac table-btn" data-toggle="tooltip" id="sensorABAC"><i class="material-icons">lock</i></button>`;
         // Append table with add row form on add new button click
         $(".add-new").click(function(){
             $(this).attr("disabled", "disabled");
             $(".edit").attr("disabled", "disabled");
             $(".delete").attr("disabled", "disabled");
+            $(".abac").attr("disabled", "disabled");
             var index = $("table tbody tr:last-child").index();
             var tipos = "{{ types }}".substring(0,"{{ types }}".length-1).split(',');
             var row = '<tr>' +
@@ -174,6 +179,7 @@ display: none;
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
+                $(".abac").removeAttr("disabled");
             }
         });
         // Update row on update button click
@@ -199,7 +205,7 @@ display: none;
                         name = $(this).val();
                     }
                 });
-                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
+                $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .abac").toggle();
                 $(".add").hide();
                 $.post("/post/type/"+$(this).closest("tr").find("#id").text(),
                     {
@@ -211,6 +217,7 @@ display: none;
                 $(".add-new").removeAttr("disabled");
                 $(".edit").removeAttr("disabled");
                 $(".delete").removeAttr("disabled");
+                $(".abac").removeAttr("disabled");
             }
         });
         var description;
@@ -239,10 +246,11 @@ display: none;
                 }
                 $(this).html(html);
             });
-            $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
+            $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .abac").toggle();
             $(".add-new").attr("disabled", "disabled");
             $(".edit").attr("disabled", "disabled");
             $(".delete").attr("disabled", "disabled");
+            $(".abac").attr("disabled", "disabled");
         });
         // Cancel row on cancel button click
         $(document).on("click", "#sensorCancel", function(){
@@ -257,10 +265,11 @@ display: none;
                     $(this).html(units);
                 }
             });
-            $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete").toggle();
+            $(this).parents("tr").find("#sensorUpdate, .cancel, .edit, .delete, .abac").toggle();
             $(".add-new").removeAttr('disabled');
             $(".edit").removeAttr('disabled');
             $(".delete").removeAttr('disabled');
+            $(".abac").removeAttr('disabled');
         });
         // Delete row on delete button click
         $(document).on("click", ".delete", function(){
@@ -275,6 +284,7 @@ display: none;
             $(".add-new").removeAttr("disabled");
             $(".edit").removeAttr("disabled");
             $(".delete").removeAttr("disabled");
+            $(".abac").removeAttr("disabled");
         });
     });
 </script>

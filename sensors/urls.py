@@ -10,6 +10,7 @@ urlpatterns = [
     path('types/', views.TypesIndexView.as_view(), name='types'),
     path('users/', views.UsersIndexView.as_view(), name='users'),
     path('notifications/', views.notifications, name='notifications'),
+    path('abac/<slug:type>/<slug:id>', views.abac, name='abac'),
     path('sensors/<slug:room_id>/', views.SensorsIndexView.roomDetails, name="roomDetails"),
 
     path('login/', views.login, name='login'),

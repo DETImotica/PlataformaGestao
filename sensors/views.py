@@ -93,7 +93,6 @@ class SensorsIndexView(generic.ListView):
         requestSensorsID = api_get_request('/room/' + room_id + '/sensors', request.session)
         if requestSensorsID.headers["Content-Type"]=="application/json":
             get_async_loop().run_until_complete(api_delete_bulk_async('/sensor', requestSensorsID.json()["ids"], request.session))
-        return []
 
     def roomDetails(request, room_id):
         if 'allow' not in request.session:
@@ -192,6 +191,15 @@ def notifications(request):
     if not request.session['allow']:
         return redirect('/forbidden')
     return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
+
+def abac(request, type, id):
+    if 'allow' not in request.session:
+        return redirect('/login')
+    if not request.session['allow']:
+        return redirect('/forbidden')
+
+    data = api_get_request('/' + type + '/' + id, request.session).json()
+    return render(request, "sensors/abac.html", {'uname': request.session['uname'], 'type': type, 'metadata': data, 'id': id})
 
 def template(request):
     if 's' in request.GET:

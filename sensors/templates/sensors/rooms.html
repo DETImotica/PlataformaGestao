@@ -88,11 +88,11 @@ display: none;
                 <td id="name">{{ room.name }}</td>
                 <td id="description">{{ room.description }}</td>
                 <td>
-                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
-                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
-                    <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
-                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
-                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>
+                    <button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip" title="Submeter"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate" title="Submeter"><i class="material-icons">check_circle_outline</i></button>
+                    <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel" title="Cancelar"><i class="material-icons">cancel</i></button>
+                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit" title="Editar"><i class="material-icons">&#xE254;</i></button>
+                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete" title="Apagar"><i class="material-icons">&#xE872;</i></button>
                 </td>
             </tr>
             {% endfor %}
@@ -110,7 +110,6 @@ display: none;
 {% block custom-script %}
 <script type="text/javascript">
     $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
         var actions = `<button class="btn btn-link add table-btn" style="display: none" data-toggle="tooltip"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link table-btn" style="display: none" data-toggle="tooltip" id="sensorUpdate"><i class="material-icons">check_circle_outline</i></button>
                     <button class="btn btn-link cancel table-btn" style="display: none" data-toggle="tooltip" id="sensorCancel"><i class="material-icons">cancel</i></button>
