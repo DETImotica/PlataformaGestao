@@ -131,7 +131,83 @@
               </button>
             </div>
             <div class="modal-body">
-                <label for="inputContext" style="font-weight: bold">Contexto:</label>
+                <label style="font-weight: bold">Sujeitos:</label>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Administradores </label>
+                <div id="adminsModal" style="display: inline">
+                    <div id="inputAdmins" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="adminsOptions" id="adminsOn" autocomplete="off"> Sim
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="adminsOptions" id="adminsOff" autocomplete="off"> Não
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="adminsAdd" title="Restringir administradores"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="adminsCancel" title="Cancelar o restringimento de administradores" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Docentes </label>
+                <div id="teachersModal" style="display: inline">
+                    <div id="inputTeachers" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="teachersOptions" id="teachersOn" autocomplete="off"> Sim
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="teachersOptions" id="teachersOff" autocomplete="off"> Não
+                        </label>
+                    </div>
+                    <input type="text" id="teachersRestrict" placeholder="Ex: 49984, 49985" class="form-control" style="margin-left: 10px; max-width: 250px; display: inline-block">
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="teachersAdd" title="Restringir docentes"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="teachersCancel" title="Cancelar o restringimento de docentes" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Estudantes </label>
+                <div id="studentsModal" style="display: inline">
+                    <div id="inputStudents" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="studentsOptions" id="studentsOn" autocomplete="off"> Sim
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="studentsOptions" id="studentsOff" autocomplete="off"> Não
+                        </label>
+                    </div>
+                    <input type="text" id="studentsRestrict" placeholder="Ex: 49984, 49985" class="form-control" style="margin-left: 10px; max-width: 250px; display: inline-block">
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="studentsAdd" title="Restringir estudantes"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="studentsCancel" title="Cancelar o restringimento de estudantes" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Unidades Curriculares </label>
+                <div id="coursesModal" style="display: inline">
+                    <div id="inputCourses" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="coursesOptions" id="coursesOn" autocomplete="off"> Sim
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="coursesOptions" id="coursesOff" autocomplete="off"> Não
+                        </label>
+                    </div>
+                    <input type="text" id="coursesRestrict" placeholder="Ex: 49984, 49985" class="form-control" style="margin-left: 10px; max-width: 250px; display: inline;" required>
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="coursesAdd" title="Restringir unidades curriculares"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="coursesCancel" title="Cancelar o restringimento por unidades curriculares" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Email </label>
+                <div id="emailModal" style="display: inline">
+                    <div id="emailAdmins" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="emailOptions" id="emailOn" autocomplete="off"> Sim
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="emailOptions" id="emailOff" autocomplete="off"> Não
+                        </label>
+                    </div>
+                    <input type="text" id="emailRestrict" placeholder="Ex: admin@ua.pt" class="form-control" style="margin-left: 10px; max-width: 250px; display: inline-block">
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="emailAdd" title="Restringir por email"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="emailCancel" title="Cancelar o restringimento de email" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br><br>
+                <label  style="font-weight: bold">Contexto:</label>
                 <br>
                 <label style="margin-right: 10px; margin-left: 5px;"> Dia </label>
                 <div id="dayModal" style="display: inline">
@@ -177,7 +253,7 @@
                     <br>
                     <div id="inputEffect" class="btn-group btn-group-toggle" data-toggle="buttons">
                       <label class="btn btn-outline-success active">
-                        <input type="radio" name="options" id="allow" autocomplete="off" checked> Allow
+                        <input type="radio" name="options" id="allow" autocomplete="off"> Allow
                       </label>
                       <label class="btn btn-outline-danger">
                         <input type="radio" name="options" id="deny" autocomplete="off"> Deny
@@ -221,8 +297,6 @@
                 $('#dayAdd').hide();
             } else {
                 $('#dayModal').hide();
-                $('input[id=\'dayFrom\']').prop('value','');
-                $('input[id=\'dayTo\']').prop('value','');
             }
             var hasHourPolicy = $(context).parents("tr").find("td#Contexto").text().toLowerCase().indexOf("horas:");
             if (hasHourPolicy >= 0) {
@@ -233,8 +307,6 @@
                 $('#hourAdd').hide();
             } else {
                 $('#hourModal').hide();
-                $('input[id=\'hourFrom\']').prop('value','');
-                $('input[id=\'hourTo\']').prop('value','');
             }
             var hasIPPolicy = $(context).parents("tr").find("td#Contexto").text().toLowerCase().indexOf("rede:");
             if (hasIPPolicy >= 0) {
@@ -245,10 +317,166 @@
             } else {
                 $('#ipModal').hide();
             }
+            var hasAdmin = $(context).parents("tr").find("td#Sujeitos").text().toLowerCase().indexOf("administradores");
+            if (hasAdmin >= 0) {
+                $('input[id=\'adminsOn\']').closest('.btn').button('toggle');
+                $('#adminsModal').show();
+                $('#adminsCancel').show();
+                $('#adminsAdd').hide();
+            } else {
+                $('#adminsModal').hide();
+            }
+            $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
+                $('#teachersModal').hide();
+                $('#teachersRestrict').hide();
+                if (value.toLowerCase().indexOf("docentes")>=0) {
+                    $('input[id=\'teachersOn\']').closest('.btn').button('toggle');
+                    $('#teachersModal').show();
+                    $('#teachersCancel').show();
+                    $('#teachersAdd').hide();
+                    if (value.toLowerCase().indexOf(":")>=0) {
+                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
+                            $('#teachersRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        } else {
+                            $('#teachersRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
+                        }
+                    } else {
+                        $('#teachersRestrict').val("");
+                    }
+                    $('#teachersRestrict').show();
+                    return false;
+                }
+            });
+            $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
+                $('#studentsModal').hide();
+                $('#studentsRestrict').hide();
+                if (value.toLowerCase().indexOf("estudantes")>=0) {
+                    $('input[id=\'studentsOn\']').closest('.btn').button('toggle');
+                    $('#studentsModal').show();
+                    $('#studentsCancel').show();
+                    $('#studentsAdd').hide();
+                    if (value.toLowerCase().indexOf(":")>=0) {
+                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
+                            $('#studentsRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        } else {
+                            $('#studentsRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
+                        }
+                    } else {
+                        $('#studentsRestrict').val("");
+                    }
+                    $('#studentsRestrict').show();
+                    return false;
+                }
+            });
+            $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
+                $('#coursesModal').hide();
+                $('#coursesRestrict').hide();
+                if (value.toLowerCase().indexOf("unidades curriculares")==0) {
+                    $('input[id=\'coursesOn\']').closest('.btn').button('toggle');
+                    $('#coursesModal').show();
+                    $('#coursesCancel').show();
+                    $('#coursesAdd').hide();
+                    if (value.toLowerCase().indexOf(":")>=0) {
+                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
+                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        } else {
+                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
+                        }
+                    } else {
+                        $('#coursesRestrict').val("");
+                    }
+                    $('#coursesRestrict').show();
+                    return false;
+                }
+            });
+            $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
+                $('#emailModal').hide();
+                $('#emailRestrict').hide();
+                if (value.toLowerCase().indexOf("email")>=0) {
+                    $('input[id=\'emailOn\']').closest('.btn').button('toggle');
+                    $('#emailModal').show();
+                    $('#emailCancel').show();
+                    $('#emailAdd').hide();
+                    if (value.toLowerCase().indexOf(":")>=0) {
+                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
+                            $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        } else {
+                            $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
+                        }
+                    } else {
+                        $('#emailRestrict').val("");
+                    }
+                    $('#coursesRestrict').show();
+                    return false;
+                }
+            });
+        } else {
+            $('#adminsModal').hide();
+            $('#teachersModal').hide();
+            $('#studentsModal').hide();
+            $('#coursesModal').hide();
+            $('#emailModal').hide();
+            $('#dayModal').hide();
+            $('#hourModal').hide();
+            $('#ipModal').hide();
+            $('input[type=radio]').prop("checked", false);
+            $('input[type=radio]').parent('label').removeClass('active');
         }
 
         $('#policyModal').modal('show');
-
+        $("#emailAdd").click(function(){
+            $('#emailModal').show();
+            $('#emailAdd').hide();
+            $('#emailCancel').show();
+        });
+        $("#emailCancel").click(function(){
+            $('#emailModal').hide();
+            $('#emailCancel').hide();
+            $('#emailAdd').show();
+        });
+        $("#adminsAdd").click(function(){
+            $('#adminsModal').show();
+            $('#adminsAdd').hide();
+            $('#adminsCancel').show();
+        });
+        $("#adminsCancel").click(function(){
+            $('#adminsModal').hide();
+            $('#adminsCancel').hide();
+            $('#adminsAdd').show();
+        });
+        $("#teachersAdd").click(function(){
+            $('#teachersModal').show();
+            $('#teachersAdd').hide();
+            $('#teachersCancel').show();
+            $('#teachersRestrict').hide();
+        });
+        $("#teachersCancel").click(function(){
+            $('#teachersModal').hide();
+            $('#teachersCancel').hide();
+            $('#teachersAdd').show();
+        });
+        $("#studentsAdd").click(function(){
+            $('#studentsModal').show();
+            $('#studentsAdd').hide();
+            $('#studentsCancel').show();
+            $('#studentsRestrict').hide();
+        });
+        $("#studentsCancel").click(function(){
+            $('#studentsModal').hide();
+            $('#studentsCancel').hide();
+            $('#studentsAdd').show();
+        });
+        $("#coursesAdd").click(function(){
+            $('#coursesModal').show();
+            $('#coursesAdd').hide();
+            $('#coursesCancel').show();
+            $('#coursesRestrict').hide();
+        });
+        $("#coursesCancel").click(function(){
+            $('#coursesModal').hide();
+            $('#coursesCancel').hide();
+            $('#coursesAdd').show();
+        });
         $("#dayAdd").click(function(){
             $('#dayModal').show();
             $('#dayAdd').hide();
@@ -307,6 +535,40 @@
     }
 
     $(document).ready(function(){
+
+        $('input:radio[name="teachersOptions"]').change(
+            function(){
+                if ($('input[id=\'teachersOn\']').is(':checked')) {
+                    $('#teachersRestrict').show();
+                } else {
+                    $('#teachersRestrict').hide();
+                }
+            });
+        $('input:radio[name="studentsOptions"]').change(
+            function(){
+                if ($('input[id=\'studentsOn\']').is(':checked')) {
+                    $('#studentsRestrict').show();
+                } else {
+                    $('#studentsRestrict').hide();
+                }
+            });
+        $('input:radio[name="coursesOptions"]').change(
+            function(){
+                if ($('input[id=\'coursesOn\']').is(':checked')) {
+                    $('#coursesRestrict').show();
+                } else {
+                    $('#coursesRestrict').hide();
+                }
+            });
+        $('input:radio[name="emailOptions"]').change(
+            function(){
+                if ($('input[id=\'emailOn\']').is(':checked')) {
+                    $('#emailRestrict').show();
+                } else {
+                    $('#emailRestrict').hide();
+                }
+            });
+
         var actions = `<button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>`;
         // Append table with add row form on add new button click
@@ -316,6 +578,7 @@
         $(document).on("click", "#sensorEdit", function(){
             showModal(true, "Editar Política", this);
         });
+
         // Delete row on delete button click
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
@@ -331,6 +594,16 @@
         });
 
         $('#policyModal').on('hidden.bs.modal', function () {
+            $('#adminsAdd').show();
+            $('#adminsCancel').hide();
+            $('#teachersAdd').show();
+            $('#teachersCancel').hide();
+            $('#studentsAdd').show();
+            $('#studentsCancel').hide();
+            $('#coursesAdd').show();
+            $('#coursesCancel').hide();
+            $('#emailAdd').show();
+            $('#emailCancel').hide();
             $('#dayAdd').show();
             $('#dayCancel').hide();
             $('#hourAdd').show();
@@ -343,6 +616,20 @@
             $("#GET").prop("checked", false);
             $("#POST").prop("checked", false);
             $("#DELETE").prop("checked", false);
+            $('input[id=\'dayFrom\']').prop('value','');
+            $('input[id=\'dayTo\']').prop('value','');
+            $('input[id=\'hourFrom\']').prop('value','');
+            $('input[id=\'hourTo\']').prop('value','');
+            $('#adminsModal').hide();
+            $('#teachersModal').hide();
+            $('#studentsModal').hide();
+            $('#coursesModal').hide();
+            $('#emailModal').hide();
+            $('#dayModal').hide();
+            $('#hourModal').hide();
+            $('#ipModal').hide();
+            $('input[type=radio]').prop("checked", false);
+            $('input[type=radio]').parent('label').removeClass('active');
         });
     });
     </script>

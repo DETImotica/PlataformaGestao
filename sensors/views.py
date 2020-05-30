@@ -212,7 +212,7 @@ class Policy:
                 elif key == 'student':
                     subres.append("Estudantes")
                 elif key == 'teacher':
-                    subres.append("Professores")
+                    subres.append("Docentes")
                 elif key == 'courses':
                     subres.append("Unidades Curriculares: " + ', '.join([str(x) for x in subject[key]]))
             res.append(', '.join(subres))
@@ -242,21 +242,21 @@ def abac(request, type, id):
     metadata = api_get_request('/' + type + '/' + id, request.session).json()
     data = [
         {
-            'subjects': [{'teacher': True, 'courses': [49984]}],
+            'subjects': [{'teacher': True}],
             'actions': ['GET', 'POST'],
             'context': {'ip': 'internal'},
             'effect': 'allow',
             'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA'
         },
         {
-            'subjects': [{'student': True}],
+            'subjects': [{'admin': True}, {'student': True}, {'teacher': True, 'courses': [49985, 49986]}],
             'actions': ['GET'],
             'context': {'day': {'from': '2020-01-30', 'to': '2020-06-30'}, 'ip': 'external'},
             'effect': 'allow',
             'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
         },
         {
-            'subjects': [{'email': "andr.alves@ua.pt"}],
+            'subjects': [{'email': "andr.alves@ua.pt"},{'course': True, 'courses': [9000]}],
             'actions': ['GET'],
             'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',
