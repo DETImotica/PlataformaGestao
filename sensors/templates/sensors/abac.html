@@ -122,7 +122,7 @@
     </div>
 
     <div class="modal fade" id="policyModal" tabindex="-1" role="dialog" aria-labelledby="policyModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document" style="max-width: 650px;">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="policyModalLabel"></h5>
@@ -131,11 +131,49 @@
               </button>
             </div>
             <div class="modal-body">
-                <label for="inputDescricao">Descrição:</label>
+                <label for="inputContext" style="font-weight: bold">Contexto:</label>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Dia </label>
+                <div id="dayModal" style="display: inline">
+                    <div id="inputDay"  data-toggle="buttons" style="display: inline">
+                        <label class="btn btn-outline-info" style="margin-top: 10px;">
+                            Desde <input type="date" class="btn btn-info" name="dayFrom" id="dayFrom" required> até <input type="date" class="btn btn-info" name="dayTo" id="dayTo" required>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="dayAdd" title="Restringir dias"><i style="margin-bottom: 4px;" class="fa fa-calendar-plus"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="dayCancel" title="Cancelar o restringimento de dias" style="display: none;"><i style="margin-bottom: 4px;" class="fa fa-calendar-times"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> Hora </label>
+                <div id="hourModal" style="display: inline">
+                    <div id="inputHour"  data-toggle="buttons" style="display: inline">
+                        <label class="btn btn-outline-info" style="margin-top: 10px;">
+                            Desde as <input type="time" class="btn btn-info" name="hourFrom" id="hourFrom" required> até às <input type="time" class="btn btn-info" name="hourTo" id="hourTo" required>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="hourAdd" title="Restringir horas"><i style="margin-bottom: 2px;" class="fa fa-clock"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="hourCancel" title="Cancelar o restringimento de horas" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br>
+                <label style="margin-right: 10px; margin-left: 5px;"> IP </label>
+                <div id="ipModal" style="display: inline">
+                    <div id="inputIP" class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="ipOptions" id="interna" autocomplete="off"> Interno
+                        </label>
+                        <label class="btn btn-outline-danger">
+                            <input type="radio" name="ipOptions" id="externa" autocomplete="off"> Externo
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-circle" data-toggle="tooltip" id="ipAdd" title="Restringir IPs"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
+                <button class="btn btn-circle" data-toggle="tooltip" id="ipCancel" title="Cancelar o restringimento de IPs" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
+                <br><br>
+                <label for="inputDescricao" style="font-weight: bold">Descrição:</label>
                 <textarea type="text" class="form-control input-lg" id="inputDescricao"></textarea>
                 <br>
                 <div style="width: 30%; float: left;">
-                    <label for="inputEffect">Efeito:</label>
+                    <label for="inputEffect" style="font-weight: bold">Efeito:</label>
                     <br>
                     <div id="inputEffect" class="btn-group btn-group-toggle" data-toggle="buttons">
                       <label class="btn btn-outline-success active">
@@ -147,7 +185,7 @@
                     </div>
                 </div>
                 <div  style="width: 60%; float: right;">
-                    <label for="inputEffect">Métodos:</label>
+                    <label for="inputEffect" style="font-weight: bold">Métodos:</label>
                     <br>
                     <label class="checkbox-inline"><input type="checkbox" id="GET" value=""> GET </label>
                     <label class="checkbox-inline"><input type="checkbox" id="POST" value=""> POST </label>
@@ -174,8 +212,74 @@
             $(context).parents("tr").find('td#Metodos').text().split(', ').forEach(
                 method => $("#" + method).prop("checked", true)
             )
+            var hasDayPolicy = $(context).parents("tr").find("td#Contexto").text().toLowerCase().indexOf("dias:");
+            if (hasDayPolicy >= 0) {
+                $('input[id=\'dayFrom\']').prop('value',$(context).parents("tr").find("td#Contexto").text().toLowerCase().substr(hasDayPolicy+9, 10));
+                $('input[id=\'dayTo\']').prop('value',$(context).parents("tr").find("td#Contexto").text().toLowerCase().substr(hasDayPolicy+22, 10));
+                $('#dayModal').show();
+                $('#dayCancel').show();
+                $('#dayAdd').hide();
+            } else {
+                $('#dayModal').hide();
+                $('input[id=\'dayFrom\']').prop('value','');
+                $('input[id=\'dayTo\']').prop('value','');
+            }
+            var hasHourPolicy = $(context).parents("tr").find("td#Contexto").text().toLowerCase().indexOf("horas:");
+            if (hasHourPolicy >= 0) {
+                $('input[id=\'hourFrom\']').prop('value',$(context).parents("tr").find("td#Contexto").text().toLowerCase().substr(hasHourPolicy+10, 5));
+                $('input[id=\'hourTo\']').prop('value',$(context).parents("tr").find("td#Contexto").text().toLowerCase().substr(hasHourPolicy+21, 5));
+                $('#hourModal').show();
+                $('#hourCancel').show();
+                $('#hourAdd').hide();
+            } else {
+                $('#hourModal').hide();
+                $('input[id=\'hourFrom\']').prop('value','');
+                $('input[id=\'hourTo\']').prop('value','');
+            }
+            var hasIPPolicy = $(context).parents("tr").find("td#Contexto").text().toLowerCase().indexOf("rede:");
+            if (hasIPPolicy >= 0) {
+                $('input[id=\'' + $(context).parents("tr").find("td#Contexto").text().toLowerCase().substr(hasIPPolicy+6, 7) + '\']').closest('.btn').button('toggle');
+                $('#ipModal').show();
+                $('#ipCancel').show();
+                $('#ipAdd').hide();
+            } else {
+                $('#ipModal').hide();
+            }
         }
+
         $('#policyModal').modal('show');
+
+        $("#dayAdd").click(function(){
+            $('#dayModal').show();
+            $('#dayAdd').hide();
+            $('#dayCancel').show();
+        });
+        $("#dayCancel").click(function(){
+            $('#dayModal').hide();
+            $('#dayCancel').hide();
+            $('#dayAdd').show();
+        });
+        $("#hourAdd").click(function(){
+            $('#hourModal').show();
+            $('#hourAdd').hide();
+            $('#hourCancel').show();
+        });
+        $("#hourCancel").click(function(){
+            $('#hourModal').hide();
+            $('#hourCancel').hide();
+            $('#hourAdd').show();
+        });
+        $("#ipAdd").click(function(){
+            $('#ipModal').show();
+            $('#ipAdd').hide();
+            $('#ipCancel').show();
+        });
+        $("#ipCancel").click(function(){
+            $('#ipModal').hide();
+            $('#ipCancel').hide();
+            $('#ipAdd').show();
+        });
+
         $("#submitPolicy").unbind("click");
         $( "#submitPolicy" ).bind( 'click', function(){
             var desc = $("#inputDescricao").text();
@@ -225,7 +329,14 @@
                 */
             }
         });
+
         $('#policyModal').on('hidden.bs.modal', function () {
+            $('#dayAdd').show();
+            $('#dayCancel').hide();
+            $('#hourAdd').show();
+            $('#hourCancel').hide();
+            $('#ipAdd').show();
+            $('#ipCancel').hide();
             $('#inputDescricao').text("");
             $('#inputDescricao').removeAttr("name");
             $('input[id=\'allow\']').closest('.btn').button('toggle');

@@ -229,7 +229,7 @@ class Policy:
                 elif key == 'hour':
                     res.append("Horas: de " + context[key]['from'] + " a " + context[key]['to'])
                 elif key == 'ip':
-                    res.append("Rede: " + 'Interna' if context[key] == 'internal' else 'Externa')
+                    res.append("Rede: " + ('Interna' if context[key] == 'internal' else 'Externa'))
             self.context = '\n'.join(res)
 
 
@@ -244,21 +244,21 @@ def abac(request, type, id):
         {
             'subjects': [{'teacher': True, 'courses': [49984]}],
             'actions': ['GET', 'POST'],
-            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'context': {'ip': 'internal'},
             'effect': 'allow',
             'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA'
         },
         {
             'subjects': [{'student': True}],
             'actions': ['GET'],
-            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'context': {'day': {'from': '2020-01-30', 'to': '2020-06-30'}, 'ip': 'external'},
             'effect': 'allow',
             'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
         },
         {
             'subjects': [{'email': "andr.alves@ua.pt"}],
             'actions': ['GET'],
-            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',
             'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
         }
