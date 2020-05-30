@@ -11,8 +11,6 @@ from .models import Room, Sensor, Type, User
 
 # Main views
 
-loop = None
-
 class RoomsIndexView(generic.ListView):
     template_name = 'sensors/rooms.html'
     context_object_name = 'rooms_list'
@@ -85,7 +83,7 @@ class SensorsIndexView(generic.ListView):
             sensorsList = []
             for (id, request) in get_async_loop().run_until_complete(api_get_bulk_async('/sensor', requestSensorsID.json()["ids"], session)):
                 sensorsList.append(Sensor(sensor_id=id,room_id=request['room_id'],description=request['description'],type=request['data']['type'],symbol=request['data']['unit_symbol']))
-            sensorsList.sort(key=lambda s: (s.type.lower(), s.symbol.lower(), s.description.lower()))
+            sensorsList.sort(key=lambda s: (s.type.lower(), s.symbol.lower(), s.description.lower() if s.description is not None else s.description))
             return sensorsList
         return []
 
@@ -192,14 +190,85 @@ def notifications(request):
         return redirect('/forbidden')
     return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
 
+class Policy:
+    def __init__(self, subjects, actions, context, effect, description):
+        self.subjects = ""
+        self.actions = ', '.join(actions)
+        self.context = ""
+        self.effect = 'Allow' if effect == 'allow' else 'Deny'
+        self.description = description
+        self.setSubjects(subjects)
+        self.setContext(context)
+
+    def setSubjects(self, subjects):
+        res = []
+        for subject in subjects:
+            subres = []
+            for key in subject:
+                if key == 'email':
+                    subres.append("Email: " + subject[key])
+                elif key == 'admin':
+                    subres.append("Administradores")
+                elif key == 'student':
+                    subres.append("Estudantes")
+                elif key == 'teacher':
+                    subres.append("Professores")
+                elif key == 'courses':
+                    subres.append("Unidades Curriculares: " + ', '.join([str(x) for x in subject[key]]))
+            res.append(', '.join(subres))
+        self.subjects = '\n'.join(res)
+
+    def setContext(self, context):
+        res = []
+        if context == {}:
+            self.context = "Sempre"
+        else:
+            for key in context:
+                if key == 'day':
+                    res.append("Dias: de " + context[key]['from'] + " a " + context[key]['to'])
+                elif key == 'hour':
+                    res.append("Horas: de " + context[key]['from'] + " a " + context[key]['to'])
+                elif key == 'ip':
+                    res.append("Rede: " + 'Interna' if context[key] == 'internal' else 'Externa')
+            self.context = '\n'.join(res)
+
+
 def abac(request, type, id):
     if 'allow' not in request.session:
         return redirect('/login')
     if not request.session['allow']:
         return redirect('/forbidden')
 
-    data = api_get_request('/' + type + '/' + id, request.session).json()
-    return render(request, "sensors/abac.html", {'uname': request.session['uname'], 'type': type, 'metadata': data, 'id': id})
+    metadata = api_get_request('/' + type + '/' + id, request.session).json()
+    data = [
+        {
+            'subjects': [{'teacher': True, 'courses': [49984]}],
+            'actions': ['GET', 'POST'],
+            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'effect': 'allow',
+            'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA'
+        },
+        {
+            'subjects': [{'student': True}],
+            'actions': ['GET'],
+            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'effect': 'allow',
+            'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
+        },
+        {
+            'subjects': [{'email': "andr.alves@ua.pt"}],
+            'actions': ['GET'],
+            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}, 'ip': 'internal'},
+            'effect': 'deny',
+            'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
+        }
+    ]
+
+    policies = []
+    for d in data:
+        policies.append(Policy(d['subjects'], d['actions'], d['context'], d['effect'], d['description']))
+
+    return render(request, "sensors/abac.html", {'uname': request.session['uname'], 'type': type, 'metadata': metadata, 'id': id, 'policies': policies})
 
 def template(request):
     if 's' in request.GET:
@@ -394,8 +463,11 @@ class ResponseException(Exception):
 # Misc. Helper functions
 
 def get_async_loop():
-    global loop
-    if loop is None:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    return loop
+    try:
+        asyncio.get_event_loop()
+    except:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+    finally:
+        return asyncio.get_event_loop()
+
+

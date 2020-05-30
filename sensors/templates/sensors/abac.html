@@ -17,7 +17,13 @@
         cursor: pointer;
     }
     table.table th:last-child {
-        width: 110px;
+        width: 80px;
+    }
+    table.table th:nth-last-child(2) {
+        width: 100px;
+    }
+    table.table th:nth-last-child(3) {
+        width: 130px;
     }
     table.table td a {
 		cursor: pointer;
@@ -71,17 +77,163 @@
             <h1 class="h3 mb-2 text-gray-800 d-inline-block" style="margin-left: 0.6em">{% if type == 'room' %}Sala {{ metadata.name }}{% elif type == 'sensor' %}Sensor {{ id }}{% elif type == 'type' %}Métrica {{ metadata.name }}{% endif %}</h1>
         </a>
         <br><br>
-        <h1 class="h3 mb-2 text-gray-800">Políticas de Controlo de Acessos</h1>
+
         <br>
+        <div style="margin-bottom: 1em;" class="row">
+            <div class="col-sm-11">
+                <h1 class="h4 mb-2 text-gray-800">Políticas de Controlo de Acessos</h1>
+            </div>
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-primary add-new"><i style="padding-right: 5px;" class="fa fa-plus"></i>Adicionar</button>
+            </div>
+            </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                            <th>Sujeitos</th>
+                            <th>Contexto</th>
+                            <th>Descrição</th>
+                            <th>Métodos</th>
+                            <th>Efeito</th>
+                            <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for policy in policies %}
+                            <tr>
+                                <td id="Sujeitos">{{ policy.subjects | linebreaks  }}</td>
+                                <td id="Contexto">{{ policy.context | linebreaks }}</td>
+                                <td id="Descricao">{{ policy.description }}</td>
+                                <td id="Metodos">{{ policy.actions }}</td>
+                                <td id="Efeito" style="color: {% if policy.effect == "Allow" %}green{% else %}red{% endif %}">{{ policy.effect }}</td>
+                                <td>
+                                    <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit" title="Editar"><i class="material-icons">&#xE254;</i></button>
+                                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete" title="Apagar"><i class="material-icons">&#xE872;</i></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
+            {% if not policies %}
+                <p>Não existem políticas associadas</p>
+            {% endif %}
+    </div>
+
+    <div class="modal fade" id="policyModal" tabindex="-1" role="dialog" aria-labelledby="policyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="policyModalLabel"></h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <label for="inputDescricao">Descrição:</label>
+                <textarea type="text" class="form-control input-lg" id="inputDescricao"></textarea>
+                <br>
+                <div style="width: 30%; float: left;">
+                    <label for="inputEffect">Efeito:</label>
+                    <br>
+                    <div id="inputEffect" class="btn-group btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-outline-success active">
+                        <input type="radio" name="options" id="allow" autocomplete="off" checked> Allow
+                      </label>
+                      <label class="btn btn-outline-danger">
+                        <input type="radio" name="options" id="deny" autocomplete="off"> Deny
+                      </label>
+                    </div>
+                </div>
+                <div  style="width: 60%; float: right;">
+                    <label for="inputEffect">Métodos:</label>
+                    <br>
+                    <label class="checkbox-inline"><input type="checkbox" id="GET" value=""> GET </label>
+                    <label class="checkbox-inline"><input type="checkbox" id="POST" value=""> POST </label>
+                    <label class="checkbox-inline"><input type="checkbox" id="DELETE" value=""> DELETE </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+              <a class="btn btn-primary" style="color: white" id="submitPolicy">Submeter</a>
+            </div>
+          </div>
+        </div>
     </div>
 
 {% endblock content %}
 
 {% block custom-script %}
     <script type="text/javascript">
-        $(document).ready(function(){
-
+    function showModal(edit, title, context){
+        $('#policyModalLabel').html(title);
+        if(edit) {
+            $('#inputDescricao').html($(context).parents("tr").find('td#Descricao').text());
+            $('input[id=\'' + $(context).parents("tr").find("td#Efeito").text().toLowerCase() + '\']').closest('.btn').button('toggle');
+            $(context).parents("tr").find('td#Metodos').text().split(', ').forEach(
+                method => $("#" + method).prop("checked", true)
+            )
+        }
+        $('#policyModal').modal('show');
+        $("#submitPolicy").unbind("click");
+        $( "#submitPolicy" ).bind( 'click', function(){
+            var desc = $("#inputDescricao").text();
+            error = false;
+            if (desc.length == 0) {
+                $('#inputDescricao').attr("name","error");
+                error = true;
+            }
+            if (error) return;
+            /*
+            $.post("/post/mobile/notifications",
+                {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    sensor: uuid,
+                    subject: sbj,
+                    message: msg
+                },
+                function() {
+                    window.location.replace(window.location);
+                }
+            )
+            */
+            $('#policyModal').modal('hide');
         });
+    }
+
+    $(document).ready(function(){
+        var actions = `<button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit"><i class="material-icons">&#xE254;</i></button>
+                    <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete"><i class="material-icons">&#xE872;</i></button>`;
+        // Append table with add row form on add new button click
+        $(".add-new").click(function(){
+            showModal(false, "Adicionar Política", this);
+        });
+        $(document).on("click", "#sensorEdit", function(){
+            showModal(true, "Editar Política", this);
+        });
+        // Delete row on delete button click
+        $(document).on("click", ".delete", function(){
+            $(this).parents("tr").remove();
+            if ($(this).closest("tr").find("#id").text()) {
+                /*
+                $.post("/delete/type/" + $(this).closest("tr").find("#id").text(),
+                    {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    }
+                );
+                */
+            }
+        });
+        $('#policyModal').on('hidden.bs.modal', function () {
+            $('#inputDescricao').text("");
+            $('#inputDescricao').removeAttr("name");
+            $('input[id=\'allow\']').closest('.btn').button('toggle');
+            $("#GET").prop("checked", false);
+            $("#POST").prop("checked", false);
+            $("#DELETE").prop("checked", false);
+        });
+    });
     </script>
 {% endblock %}
 
