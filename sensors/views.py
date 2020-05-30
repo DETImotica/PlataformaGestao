@@ -206,7 +206,7 @@ class Policy:
             subres = []
             for key in subject:
                 if key == 'email':
-                    subres.append("Email: " + subject[key])
+                    subres.append("Email: " + ', '.join([str(x) for x in subject[key]]))
                 elif key == 'admin':
                     subres.append("Administradores")
                 elif key == 'student':
@@ -256,7 +256,7 @@ def abac(request, type, id):
             'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
         },
         {
-            'subjects': [{'email': "andr.alves@ua.pt"},{'course': True, 'courses': [9000]}],
+            'subjects': [{'email': ["andr.alves@ua.pt", "jatt@ua.pt"]},{'course': True, 'courses': [9000]}],
             'actions': ['GET'],
             'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',
