@@ -328,85 +328,78 @@
             }
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#teachersModal').hide();
-                $('#teachersRestrict').hide();
                 if (value.toLowerCase().indexOf("docentes")>=0) {
                     $('input[id=\'teachersOn\']').closest('.btn').button('toggle');
                     $('#teachersModal').show();
                     $('#teachersCancel').show();
                     $('#teachersAdd').hide();
                     if (value.toLowerCase().indexOf(":")>=0) {
-                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
-                            $('#teachersRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        if (value.toLowerCase().indexOf("</")>0) {
+                            $('#teachersRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
                         } else {
                             $('#teachersRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
                         }
                     } else {
                         $('#teachersRestrict').val("");
                     }
-                    $('#teachersRestrict').show();
                     return false;
                 }
             });
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#studentsModal').hide();
-                $('#studentsRestrict').hide();
                 if (value.toLowerCase().indexOf("estudantes")>=0) {
                     $('input[id=\'studentsOn\']').closest('.btn').button('toggle');
                     $('#studentsModal').show();
                     $('#studentsCancel').show();
                     $('#studentsAdd').hide();
                     if (value.toLowerCase().indexOf(":")>=0) {
-                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
-                            $('#studentsRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        if (value.toLowerCase().indexOf("</")>0) {
+                            $('#studentsRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2,(value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
                         } else {
                             $('#studentsRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
                         }
                     } else {
                         $('#studentsRestrict').val("");
                     }
-                    $('#studentsRestrict').show();
                     return false;
                 }
             });
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#coursesModal').hide();
-                $('#coursesRestrict').hide();
                 if (value.toLowerCase().indexOf("unidades curriculares")==0) {
                     $('input[id=\'coursesOn\']').closest('.btn').button('toggle');
                     $('#coursesModal').show();
                     $('#coursesCancel').show();
                     $('#coursesAdd').hide();
                     if (value.toLowerCase().indexOf(":")>=0) {
-                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
-                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        if (value.toLowerCase().indexOf("</")>0) {
+                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
                         } else {
                             $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
                         }
                     } else {
                         $('#coursesRestrict').val("");
                     }
-                    $('#coursesRestrict').show();
                     return false;
                 }
             });
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#emailModal').hide();
-                $('#emailRestrict').hide();
                 if (value.toLowerCase().indexOf("email")>=0) {
                     $('input[id=\'emailOn\']').closest('.btn').button('toggle');
                     $('#emailModal').show();
                     $('#emailCancel').show();
                     $('#emailAdd').hide();
                     if (value.toLowerCase().indexOf(":")>=0) {
-                        if ((value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)>=0) {
-                            $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("<"))-(value.toLowerCase().indexOf(":")+2)));
+                        console.log(value);
+                        if (value.toLowerCase().indexOf("</")>0) {
+                            $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
                         } else {
                             $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
                         }
                     } else {
                         $('#emailRestrict').val("");
                     }
-                    $('#coursesRestrict').show();
                     return false;
                 }
             });
@@ -425,6 +418,10 @@
 
         $('#policyModal').modal('show');
         $("#emailAdd").click(function(){
+            $('input[id=\'emailOn\']').prop("checked", true);
+            $('input[id=\'emailOff\']').prop("checked", false);
+            $('input[id=\'emailOn\']').parent('label').addClass('active');
+            $('input[id=\'emailOff\']').parent('label').removeClass('active');
             $('#emailModal').show();
             $('#emailAdd').hide();
             $('#emailCancel').show();
@@ -435,6 +432,10 @@
             $('#emailAdd').show();
         });
         $("#adminsAdd").click(function(){
+            $('input[id=\'adminsOn\']').prop("checked", true);
+            $('input[id=\'adminsOff\']').prop("checked", false);
+            $('input[id=\'adminsOn\']').parent('label').addClass('active');
+            $('input[id=\'adminsOff\']').parent('label').removeClass('active');
             $('#adminsModal').show();
             $('#adminsAdd').hide();
             $('#adminsCancel').show();
@@ -445,10 +446,14 @@
             $('#adminsAdd').show();
         });
         $("#teachersAdd").click(function(){
+            $('input[id=\'teachersOn\']').prop("checked", true);
+            $('input[id=\'teachersOff\']').prop("checked", false);
+            $('input[id=\'teachersOn\']').parent('label').addClass('active');
+            $('input[id=\'teachersOff\']').parent('label').removeClass('active');
             $('#teachersModal').show();
             $('#teachersAdd').hide();
             $('#teachersCancel').show();
-            $('#teachersRestrict').hide();
+
         });
         $("#teachersCancel").click(function(){
             $('#teachersModal').hide();
@@ -456,10 +461,13 @@
             $('#teachersAdd').show();
         });
         $("#studentsAdd").click(function(){
+            $('input[id=\'studentsOn\']').prop("checked", true);
+            $('input[id=\'studentsOff\']').prop("checked", false);
+            $('input[id=\'studentsOn\']').parent('label').addClass('active');
+            $('input[id=\'studentsOff\']').parent('label').removeClass('active');
             $('#studentsModal').show();
             $('#studentsAdd').hide();
             $('#studentsCancel').show();
-            $('#studentsRestrict').hide();
         });
         $("#studentsCancel").click(function(){
             $('#studentsModal').hide();
@@ -467,10 +475,13 @@
             $('#studentsAdd').show();
         });
         $("#coursesAdd").click(function(){
+            $('input[id=\'coursesOn\']').prop("checked", true);
+            $('input[id=\'coursesOff\']').prop("checked", false);
+            $('input[id=\'coursesOn\']').parent('label').addClass('active');
+            $('input[id=\'coursesOff\']').parent('label').removeClass('active');
             $('#coursesModal').show();
             $('#coursesAdd').hide();
             $('#coursesCancel').show();
-            $('#coursesRestrict').hide();
         });
         $("#coursesCancel").click(function(){
             $('#coursesModal').hide();
@@ -486,6 +497,8 @@
             $('#dayModal').hide();
             $('#dayCancel').hide();
             $('#dayAdd').show();
+            $('input[id=\'dayFrom\']').prop('value','');
+            $('input[id=\'dayTo\']').prop('value','');
         });
         $("#hourAdd").click(function(){
             $('#hourModal').show();
@@ -496,6 +509,8 @@
             $('#hourModal').hide();
             $('#hourCancel').hide();
             $('#hourAdd').show();
+            $('input[id=\'hourFrom\']').prop('value','');
+            $('input[id=\'hourTo\']').prop('value','');
         });
         $("#ipAdd").click(function(){
             $('#ipModal').show();
@@ -506,6 +521,10 @@
             $('#ipModal').hide();
             $('#ipCancel').hide();
             $('#ipAdd').show();
+            $('input[id=\'interna\']').prop("checked", false);
+            $('input[id=\'externa\']').prop("checked", false);
+            $('input[id=\'interna\']').parent('label').removeClass('active');
+            $('input[id=\'externa\']').parent('label').removeClass('active');
         });
 
         $("#submitPolicy").unbind("click");
@@ -645,34 +664,66 @@
 
         $('input:radio[name="teachersOptions"]').change(
             function(){
-                if ($('input[id=\'teachersOn\']').is(':checked')) {
-                    $('#teachersRestrict').show();
-                } else {
-                    $('#teachersRestrict').hide();
+                if ($('input[id=\'teachersOff\']').is(':checked')) {
+                    $('input[id=\'teachersOn\']').prop("checked", false);
+                    $('input[id=\'teachersOff\']').prop("checked", false);
+                    $('input[id=\'teachersOn\']').parent('label').removeClass('active');
+                    $('input[id=\'teachersOff\']').parent('label').removeClass('active');
+                    $('#teachersModal').hide();
+                    $('#teachersCancel').hide();
+                    $('#teachersAdd').show();
+                    $('#teachersRestrict').text("");
                 }
             });
         $('input:radio[name="studentsOptions"]').change(
             function(){
-                if ($('input[id=\'studentsOn\']').is(':checked')) {
-                    $('#studentsRestrict').show();
-                } else {
-                    $('#studentsRestrict').hide();
+                if ($('input[id=\'studentsOff\']').is(':checked')) {
+                    $('input[id=\'studentsOn\']').prop("checked", false);
+                    $('input[id=\'studentsOff\']').prop("checked", false);
+                    $('input[id=\'studentsOn\']').parent('label').removeClass('active');
+                    $('input[id=\'studentsOff\']').parent('label').removeClass('active');
+                    $('#studentsModal').hide();
+                    $('#studentsCancel').hide();
+                    $('#studentsAdd').show();
+                    $('#studentsRestrict').text("");
                 }
             });
         $('input:radio[name="coursesOptions"]').change(
             function(){
-                if ($('input[id=\'coursesOn\']').is(':checked')) {
-                    $('#coursesRestrict').show();
-                } else {
-                    $('#coursesRestrict').hide();
+                if ($('input[id=\'coursesOff\']').is(':checked')) {
+                    $('input[id=\'coursesOn\']').prop("checked", false);
+                    $('input[id=\'coursesOff\']').prop("checked", false);
+                    $('input[id=\'coursesOn\']').parent('label').removeClass('active');
+                    $('input[id=\'coursesOff\']').parent('label').removeClass('active');
+                    $('#coursesModal').hide();
+                    $('#coursesCancel').hide();
+                    $('#coursesAdd').show();
+                    $('#coursesRestrict').text("");
                 }
             });
         $('input:radio[name="emailOptions"]').change(
             function(){
-                if ($('input[id=\'emailOn\']').is(':checked')) {
-                    $('#emailRestrict').show();
-                } else {
-                    $('#emailRestrict').hide();
+                if ($('input[id=\'emailOff\']').is(':checked')) {
+                    $('input[id=\'emailOn\']').prop("checked", false);
+                    $('input[id=\'emailOff\']').prop("checked", false);
+                    $('input[id=\'emailOn\']').parent('label').removeClass('active');
+                    $('input[id=\'emailOff\']').parent('label').removeClass('active');
+                    $('#emailModal').hide();
+                    $('#emailCancel').hide();
+                    $('#emailAdd').show();
+                }
+            });
+
+        $('input:radio[name="adminsOptions"]').change(
+            function(){
+                if ($('input[id=\'adminsOff\']').is(':checked')) {
+                    $('input[id=\'adminsOn\']').prop("checked", false);
+                    $('input[id=\'adminsOff\']').prop("checked", false);
+                    $('input[id=\'adminsOn\']').parent('label').removeClass('active');
+                    $('input[id=\'adminsff\']').parent('label').removeClass('active');
+                    $('#adminsModal').hide();
+                    $('#adminsCancel').hide();
+                    $('#adminsAdd').show();
                 }
             });
 
