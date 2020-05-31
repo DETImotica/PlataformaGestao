@@ -391,7 +391,6 @@
                     $('#emailCancel').show();
                     $('#emailAdd').hide();
                     if (value.toLowerCase().indexOf(":")>=0) {
-                        console.log(value);
                         if (value.toLowerCase().indexOf("</")>0) {
                             $('#emailRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
                         } else {
@@ -430,6 +429,7 @@
             $('#emailModal').hide();
             $('#emailCancel').hide();
             $('#emailAdd').show();
+            $('#emailRestrict').val("");
         });
         $("#adminsAdd").click(function(){
             $('input[id=\'adminsOn\']').prop("checked", true);
@@ -459,6 +459,7 @@
             $('#teachersModal').hide();
             $('#teachersCancel').hide();
             $('#teachersAdd').show();
+            $('#teachersRestrict').val("");
         });
         $("#studentsAdd").click(function(){
             $('input[id=\'studentsOn\']').prop("checked", true);
@@ -473,6 +474,7 @@
             $('#studentsModal').hide();
             $('#studentsCancel').hide();
             $('#studentsAdd').show();
+            $('#studentsRestrict').val("");
         });
         $("#coursesAdd").click(function(){
             $('input[id=\'coursesOn\']').prop("checked", true);
@@ -487,6 +489,7 @@
             $('#coursesModal').hide();
             $('#coursesCancel').hide();
             $('#coursesAdd').show();
+            $('#coursesRestrict').val("");
         });
         $("#dayAdd").click(function(){
             $('#dayModal').show();
@@ -672,7 +675,7 @@
                     $('#teachersModal').hide();
                     $('#teachersCancel').hide();
                     $('#teachersAdd').show();
-                    $('#teachersRestrict').text("");
+                    $('#teachersRestrict').val("");
                 }
             });
         $('input:radio[name="studentsOptions"]').change(
@@ -685,7 +688,7 @@
                     $('#studentsModal').hide();
                     $('#studentsCancel').hide();
                     $('#studentsAdd').show();
-                    $('#studentsRestrict').text("");
+                    $('#studentsRestrict').val("");
                 }
             });
         $('input:radio[name="coursesOptions"]').change(
@@ -698,7 +701,7 @@
                     $('#coursesModal').hide();
                     $('#coursesCancel').hide();
                     $('#coursesAdd').show();
-                    $('#coursesRestrict').text("");
+                    $('#coursesRestrict').val("");
                 }
             });
         $('input:radio[name="emailOptions"]').change(
@@ -711,6 +714,7 @@
                     $('#emailModal').hide();
                     $('#emailCancel').hide();
                     $('#emailAdd').show();
+                    $('#emailRestrict').val("");
                 }
             });
 
@@ -788,6 +792,10 @@
             $('#ipModal').hide();
             $('input[type=radio]').prop("checked", false);
             $('input[type=radio]').parent('label').removeClass('active');
+            $('#teachersRestrict').val("");
+            $('#studentsRestrict').val("");
+            $('#coursesRestrict').val("");
+            $('#emailRestrict').val("");
         });
     });
     </script>
