@@ -572,8 +572,8 @@
     function getSubjects() {
         res = [];
         if($('#adminsCancel').is(":visible")){
-            if($('input[id=\'adminsOn\']').prop('checked')) res.push({'admin': true});
-            else if($('input[id=\'adminsOff\']').prop('checked')) res.push({'admin': false});
+            if($('input[id=\'adminsOn\']').prop('checked')) res.push({'admin': 'true'});
+            else if($('input[id=\'adminsOff\']').prop('checked')) res.push({'admin': 'false'});
         }
         if($('#teachersCancel').is(":visible")){
             if($('input[id=\'teachersOn\']').prop('checked')) {
@@ -589,7 +589,7 @@
                 }
                 res.push(r);
             }
-            else if($('input[id=\'teachersOff\']').prop('checked')) res.push({'teacher': false});
+            else if($('input[id=\'teachersOff\']').prop('checked')) res.push({'teacher': 'false'});
         }
         if($('#studentsCancel').is(":visible")){
             if($('input[id=\'studentsOn\']').prop('checked')) {
@@ -605,7 +605,7 @@
                 }
                 res.push(r);
             }
-            else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': false});
+            else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': 'false'});
         }
         if($('#coursesCancel').is(":visible")){
             if($('input[id=\'coursesOn\']').prop('checked')) {
