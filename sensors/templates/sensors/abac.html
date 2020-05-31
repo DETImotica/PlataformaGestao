@@ -537,6 +537,7 @@
                 'subjects': getSubjects(),
                 'actions': getActions(),
                 'context': getContext(),
+                'resources': [{'{{ type }}': '{{ id }}'}],
                 'effect': $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
                 'description': $("#inputDescricao").val()
             }
@@ -580,8 +581,9 @@
                 r = {'teacher': true};
                 if($("#teachersRestrict").val() != "") {
                     try{
-                       courses = $("#teachersRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#teachersRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                     }
@@ -596,8 +598,9 @@
                 r = {'student': true};
                 if($("#studentsRestrict").val() != "") {
                     try{
-                       courses = $("#studentsRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#studentsRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                     }
@@ -612,8 +615,9 @@
                 r = {};
                 if($("#coursesRestrict").val() != "") {
                     try{
-                       courses = $("#coursesRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#coursesRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                        res.push(r);
