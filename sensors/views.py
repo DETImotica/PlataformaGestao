@@ -250,20 +250,20 @@ def abac(request, type, id):
     }
     data = [
         {
-            'subjects': [{'teacher': True}],
+            'subjects': [{'teacher': 'true'}],
             'actions': ['GET', 'POST'],
             'context': {'ip': 'internal'},
             'effect': 'allow',
             'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA',
-            'uuid': '1'
+            'uid': '1'
         },
         {
-            'subjects': [{'admin': True}, {'student': True}, {'teacher': True, 'courses': [49985, 49986]}],
+            'subjects': [{'admin': 'true'}, {'student': 'true'}, {'teacher': 'true', 'courses': [49985, 49986]}],
             'actions': ['GET'],
             'context': {'day': {'from': '2020-01-30', 'to': '2020-06-30'}, 'ip': 'external'},
             'effect': 'allow',
             'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
-            'uuid': '2'
+            'uid': '2'
         },
         {
             'subjects': [{'email': "andr.alves@ua.pt"}, {'email': "jatt@ua.pt"}],
@@ -271,14 +271,14 @@ def abac(request, type, id):
             'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',
             'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
-            'uuid': '3'
+            'uid': '3'
         }
     ]
     data = api_get_request('/accessPolicies', request.session, data=body).json()
 
     policies = []
     for d in data:
-        policies.append(Policy(d['subjects'], d['actions'], d['context'], d['effect'], d['description'], d['uuid']))
+        policies.append(Policy(d['subjects'], d['actions'], d['context'], d['effect'], d['description'], d['uid']))
 
     return render(request, "sensors/abac.html", {'uname': request.session['uname'], 'type': type, 'metadata': metadata, 'id': id, 'policies': policies})
 

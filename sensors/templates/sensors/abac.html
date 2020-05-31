@@ -540,6 +540,7 @@
                 'subjects': getSubjects(),
                 'actions': getActions(),
                 'context': getContext(),
+                'resources': [{'{{ type }}': '{{ id }}'}],
                 'effect': $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
                 'description': $("#inputDescricao").val()
             }
@@ -575,16 +576,17 @@
     function getSubjects() {
         res = [];
         if($('#adminsCancel').is(":visible")){
-            if($('input[id=\'adminsOn\']').prop('checked')) res.push({'admin': true});
-            else if($('input[id=\'adminsOff\']').prop('checked')) res.push({'admin': false});
+            if($('input[id=\'adminsOn\']').prop('checked')) res.push({'admin': 'true'});
+            else if($('input[id=\'adminsOff\']').prop('checked')) res.push({'admin': 'false'});
         }
         if($('#teachersCancel').is(":visible")){
             if($('input[id=\'teachersOn\']').prop('checked')) {
                 r = {'teacher': true};
                 if($("#teachersRestrict").val() != "") {
                     try{
-                       courses = $("#teachersRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#teachersRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                     }
@@ -592,15 +594,16 @@
                 }
                 res.push(r);
             }
-            else if($('input[id=\'teachersOff\']').prop('checked')) res.push({'teacher': false});
+            else if($('input[id=\'teachersOff\']').prop('checked')) res.push({'teacher': 'false'});
         }
         if($('#studentsCancel').is(":visible")){
             if($('input[id=\'studentsOn\']').prop('checked')) {
                 r = {'student': true};
                 if($("#studentsRestrict").val() != "") {
                     try{
-                       courses = $("#studentsRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#studentsRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                     }
@@ -608,15 +611,16 @@
                 }
                 res.push(r);
             }
-            else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': false});
+            else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': 'false'});
         }
         if($('#coursesCancel').is(":visible")){
             if($('input[id=\'coursesOn\']').prop('checked')) {
                 r = {};
                 if($("#coursesRestrict").val() != "") {
                     try{
-                       courses = $("#coursesRestrict").val().split(", ").map(function (course) {
-                           return parseInt(course);
+                       courses = $("#coursesRestrict").val().split(",").map(function (course) {
+                           parseInt(course.trim()); // check
+                           return course.trim();
                        });
                        r['courses'] = courses;
                        res.push(r);
