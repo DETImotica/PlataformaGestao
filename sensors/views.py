@@ -245,6 +245,9 @@ def abac(request, type, id):
         return redirect('/forbidden')
 
     metadata = api_get_request('/' + type + '/' + id, request.session).json()
+    body = {
+        'resources.'+type: id
+    }
     data = [
         {
             'subjects': [{'teacher': True}],
@@ -271,6 +274,7 @@ def abac(request, type, id):
             'uuid': '3'
         }
     ]
+    data = api_get_request('/accessPolicies', request.session, data=body).json()
 
     policies = []
     for d in data:
@@ -378,10 +382,15 @@ def api_login(request):
 
 # API Requests - Helper functions
 
-def api_get_request(endpoint, session, tries=0):
-    result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+def api_get_request(endpoint, session, tries=0, data=""):
+    if data:
+        result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+    else:
+        result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
+            if data:
+                return result if is_json(result.text) else api_get_request(endpoint, session, tries + 1, data)
             return result if is_json(result.text) else api_get_request(endpoint, session, tries + 1)
         else:
             return None
