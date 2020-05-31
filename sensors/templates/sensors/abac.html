@@ -102,6 +102,7 @@
                       <tbody>
                         {% for policy in policies %}
                             <tr>
+                                <td id="uuid" style="display: none">{{ policy.uuid }}</td>
                                 <td id="Sujeitos">{{ policy.subjects | linebreaks  }}</td>
                                 <td id="Contexto">{{ policy.context | linebreaks }}</td>
                                 <td id="Descricao">{{ policy.description }}</td>
@@ -539,6 +540,7 @@
                 'effect': $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
                 'description': $("#inputDescricao").val()
             }
+            if(edit) data['uuid'] = $(context).parents("tr").find('td#uuid').text();
             //TODO: RETIRAR
             console.log(data);
             // ^^^^
@@ -622,10 +624,11 @@
         }
         if($('#emailCancel').is(":visible")){
             if($('input[id=\'emailOn\']').prop('checked')) {
-                r = {};
                 if($("#emailRestrict").val() != "") {
-                   r['email']  = $("#emailRestrict").val();
-                   res.push(r);
+                   $("#emailRestrict").val().split(',').forEach(function (email) {
+                            res.push({'email': email.trim()});
+                       }
+                   )
                 }
             }
         }

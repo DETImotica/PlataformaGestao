@@ -191,22 +191,24 @@ def notifications(request):
     return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
 
 class Policy:
-    def __init__(self, subjects, actions, context, effect, description):
+    def __init__(self, subjects, actions, context, effect, description, uuid):
         self.subjects = ""
         self.actions = ', '.join(actions)
         self.context = ""
         self.effect = 'Allow' if effect == 'allow' else 'Deny'
+        self.uuid = uuid
         self.description = description
         self.setSubjects(subjects)
         self.setContext(context)
 
     def setSubjects(self, subjects):
         res = []
+        email = []
         for subject in subjects:
             subres = []
             for key in subject:
                 if key == 'email':
-                    subres.append("Email: " + ', '.join([str(x) for x in subject[key]]))
+                    email.append(subject[key])
                 elif key == 'admin':
                     subres.append("Administradores")
                 elif key == 'student':
@@ -215,7 +217,10 @@ class Policy:
                     subres.append("Docentes")
                 elif key == 'courses':
                     subres.append("Unidades Curriculares: " + ', '.join([str(x) for x in subject[key]]))
-            res.append('- ' + ', '.join(subres))
+            if subres != []:
+                res.append('- ' + ', '.join(subres))
+        if email != []:
+            res.append("- Email: " + ', '.join(email))
         self.subjects = '\n'.join(res)
 
     def setContext(self, context):
@@ -246,27 +251,30 @@ def abac(request, type, id):
             'actions': ['GET', 'POST'],
             'context': {'ip': 'internal'},
             'effect': 'allow',
-            'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA'
+            'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA',
+            'uuid': '1'
         },
         {
             'subjects': [{'admin': True}, {'student': True}, {'teacher': True, 'courses': [49985, 49986]}],
             'actions': ['GET'],
             'context': {'day': {'from': '2020-01-30', 'to': '2020-06-30'}, 'ip': 'external'},
             'effect': 'allow',
-            'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
+            'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
+            'uuid': '2'
         },
         {
-            'subjects': [{'email': ["andr.alves@ua.pt, jatt@ua.pt"]}],
+            'subjects': [{'email': "andr.alves@ua.pt"}, {'email': "jatt@ua.pt"}],
             'actions': ['GET'],
             'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',
-            'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
+            'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
+            'uuid': '3'
         }
     ]
 
     policies = []
     for d in data:
-        policies.append(Policy(d['subjects'], d['actions'], d['context'], d['effect'], d['description']))
+        policies.append(Policy(d['subjects'], d['actions'], d['context'], d['effect'], d['description'], d['uuid']))
 
     return render(request, "sensors/abac.html", {'uname': request.session['uname'], 'type': type, 'metadata': metadata, 'id': id, 'policies': policies})
 
