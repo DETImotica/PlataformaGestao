@@ -215,7 +215,7 @@ class Policy:
                     subres.append("Docentes")
                 elif key == 'courses':
                     subres.append("Unidades Curriculares: " + ', '.join([str(x) for x in subject[key]]))
-            res.append(', '.join(subres))
+            res.append('- ' + ', '.join(subres))
         self.subjects = '\n'.join(res)
 
     def setContext(self, context):
@@ -225,11 +225,11 @@ class Policy:
         else:
             for key in context:
                 if key == 'day':
-                    res.append("Dias: de " + context[key]['from'] + " a " + context[key]['to'])
+                    res.append("- Dias: de " + context[key]['from'] + " a " + context[key]['to'])
                 elif key == 'hour':
-                    res.append("Horas: de " + context[key]['from'] + " a " + context[key]['to'])
+                    res.append("- Horas: de " + context[key]['from'] + " a " + context[key]['to'])
                 elif key == 'ip':
-                    res.append("Rede: " + ('Interna' if context[key] == 'internal' else 'Externa'))
+                    res.append("- Rede: " + ('Interna' if context[key] == 'internal' else 'Externa'))
             self.context = '\n'.join(res)
 
 
@@ -256,7 +256,7 @@ def abac(request, type, id):
             'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA'
         },
         {
-            'subjects': [{'email': ["andr.alves@ua.pt", "jatt@ua.pt"]},{'course': True, 'courses': [9000]}],
+            'subjects': [{'email': ["andr.alves@ua.pt, jatt@ua.pt"]}],
             'actions': ['GET'],
             'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
             'effect': 'deny',

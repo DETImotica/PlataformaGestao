@@ -510,12 +510,23 @@
 
         $("#submitPolicy").unbind("click");
         $( "#submitPolicy" ).bind( 'click', function(){
-            var desc = $("#inputDescricao").text();
+            var data = {
+                'subjects': getSubjects(),
+                'actions': getActions(),
+                'context': getContext(),
+                'effect': $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
+                'description': $("#inputDescricao").text()
+            }
+            //TODO: RETIRAR
+            console.log(data);
+            // ^^^^
             error = false;
+            /*
             if (desc.length == 0) {
                 $('#inputDescricao').attr("name","error");
                 error = true;
             }
+            */
             if (error) return;
             /*
             $.post("/post/mobile/notifications",
@@ -532,6 +543,102 @@
             */
             $('#policyModal').modal('hide');
         });
+    }
+
+    function getSubjects() {
+        res = [];
+        if($('#adminsCancel').is(":visible")){
+            if($('input[id=\'adminsOn\']').prop('checked')) res.push({'admin': true});
+            else if($('input[id=\'adminsOff\']').prop('checked')) res.push({'admin': false});
+        }
+        if($('#teachersCancel').is(":visible")){
+            if($('input[id=\'teachersOn\']').prop('checked')) {
+                r = {'teacher': true};
+                if($("#teachersRestrict").val() != "") {
+                    try{
+                       courses = $("#teachersRestrict").val().split(", ").map(function (course) {
+                           return parseInt(course);
+                       });
+                       r['courses'] = courses;
+                    }
+                    catch (e) {}
+                }
+                res.push(r);
+            }
+            else if($('input[id=\'teachersOff\']').prop('checked')) res.push({'teacher': false});
+        }
+        if($('#studentsCancel').is(":visible")){
+            if($('input[id=\'studentsOn\']').prop('checked')) {
+                r = {'student': true};
+                if($("#studentsRestrict").val() != "") {
+                    try{
+                       courses = $("#studentsRestrict").val().split(", ").map(function (course) {
+                           return parseInt(course);
+                       });
+                       r['courses'] = courses;
+                    }
+                    catch (e) {}
+                }
+                res.push(r);
+            }
+            else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': false});
+        }
+        if($('#coursesCancel').is(":visible")){
+            if($('input[id=\'coursesOn\']').prop('checked')) {
+                r = {};
+                if($("#coursesRestrict").val() != "") {
+                    try{
+                       courses = $("#coursesRestrict").val().split(", ").map(function (course) {
+                           return parseInt(course);
+                       });
+                       r['courses'] = courses;
+                       res.push(r);
+                    }
+                    catch (e) {}
+                }
+            }
+        }
+        if($('#emailCancel').is(":visible")){
+            if($('input[id=\'emailOn\']').prop('checked')) {
+                r = {};
+                if($("#emailRestrict").val() != "") {
+                   r['email']  = $("#emailRestrict").val();
+                   res.push(r);
+                }
+            }
+        }
+        return res;
+    }
+
+    function getActions() {
+        return ['GET', 'POST', 'DELETE'].filter(function (action) {
+            return $('input[id=\'' + action + '\']').prop('checked')
+        });
+    }
+
+    function getContext() {
+        res = {};
+        if($('#dayCancel').is(":visible")){
+            if($("#dayFrom").val() != "" && $("#dayTo").val() != ""){
+                res['day'] = {
+                    'from': $("#dayFrom").val(),
+                    'to': $("#dayTo").val()
+                }
+            }
+        }
+        if($('#hourCancel').is(":visible")){
+            if($("#hourFrom").val() != "" && $("#hourTo").val() != ""){
+                res['hour'] = {
+                    'from': $("#hourFrom").val() + ":00",
+                    'to': $("#hourTo").val() + ":00"
+                }
+            }
+        }
+        if($('#ipCancel').is(":visible")){
+            if($('input[id=\'interna\']').prop('checked')) res['ip'] = 'internal';
+            else if($('input[id=\'externa\']').prop('checked')) res['ip'] = 'external';
+        }
+        return res;
     }
 
     $(document).ready(function(){
