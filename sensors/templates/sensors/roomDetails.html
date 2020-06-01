@@ -101,7 +101,7 @@
                   <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" data-toggle="tooltip" type="button" class="btn btn-success" id="roomSubmit" title="Submeter"><i class="material-icons">check_circle_outline</i></button>
                   <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px; display: none" data-toggle="tooltip" type="button" class="btn btn-secondary" id="roomCancel" title="Cancelar"><i class="material-icons">cancel</i></button>
                   <button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px;" data-toggle="tooltip" type="button" class="btn btn-danger" id="roomDelete" title="Remover"><i class="material-icons">delete</i></button>
-                  <a href="/abac/room/{{ room.room_id }}"><button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px;" data-toggle="tooltip" type="button" class="btn btn-secondary" id="roomABAC" title="Controlo de Acessos"><i class="material-icons">lock</i></button></a>
+                  <a href="abac/room/{{ room.room_id }}"><button style="margin-top: 32px; padding-bottom: 0px; margin-right: 5px;" data-toggle="tooltip" type="button" class="btn btn-secondary" id="roomABAC" title="Controlo de Acessos"><i class="material-icons">lock</i></button></a>
                 </div>
               </div>
             </form>
@@ -140,7 +140,7 @@
                                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete" title="Apagar"><i class="material-icons">&#xE872;</i></button>
                                     <button class="btn btn-link notify table-btn" data-toggle="tooltip" id="sensorNotify" title="Notificar"><i class="material-icons">chat_bubble</i></button>
                                     <button class="btn btn-link reveal table-btn" data-toggle="tooltip" id="sensorReveal" title="Chave de Encriptação"><i class="material-icons">vpn_key</i></button>
-                                    <a style="margin-left: 0px; margin-right: 0px" href="/abac/sensor/{{ sensor.sensor_id }}"><button class="btn btn-link abac table-btn" data-toggle="tooltip" id="sensorABAC" title="Controlo de Acessos"><i class="material-icons">lock</i></button></a>
+                                    <a style="margin-left: 0px; margin-right: 0px" href="abac/sensor/{{ sensor.sensor_id }}"><button class="btn btn-link abac table-btn" data-toggle="tooltip" id="sensorABAC" title="Controlo de Acessos"><i class="material-icons">lock</i></button></a>
                                 </td>
                             </tr>
                         {% endfor %}

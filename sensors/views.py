@@ -354,7 +354,7 @@ def forbidden(request):
 
 
 def api_login(request):
-    return redirect('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1/login?app=gestao&redirect_url=' + request.build_absolute_uri('/'))
+    return redirect('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1/login?app=gestao&redirect_url=' + request.build_absolute_uri('/gestao/'))
 
 # API Requests - Helper functions
 

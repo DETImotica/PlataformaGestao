@@ -90,7 +90,7 @@
         <label id="id" style="display: none">
             {% if type == 'room' %}{{id}}{% elif type == 'sensor' %}{{id}}{% elif type == 'type' %}{{id}}{% endif %}
         </label>
-        <a href="/{% if type == 'type' %}types{% else %}sensors{% endif %}/{% if type == 'room' %}{{ id }}{% elif type == 'sensor' %}{{ metadata.room_id }}{% endif %}">
+        <a href="{% if type == 'type' %}types{% else %}sensors{% endif %}/{% if type == 'room' %}{{ id }}{% elif type == 'sensor' %}{{ metadata.room_id }}{% endif %}">
             <i class="fas fa-arrow-left fa-lg text-black-50 d-inline-block"></i>
             <h1 class="h3 mb-2 text-gray-800 d-inline-block" style="margin-left: 0.6em">{% if type == 'room' %}Sala {{ metadata.name }}{% elif type == 'sensor' %}Sensor {{ id }}{% elif type == 'type' %}Métrica {{ metadata.name }}{% endif %}</h1>
         </a>
