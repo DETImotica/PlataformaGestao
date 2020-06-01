@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 import requests, json
 import asyncio, aiohttp
+from DETImotica.settings import API_URL
 
 from .models import Room, Sensor, Type, User
 
@@ -354,21 +355,22 @@ def forbidden(request):
 
 
 def api_login(request):
-    return redirect('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1/login?app=gestao&redirect_url=' + request.build_absolute_uri('/gestao/'))
+    return redirect(API_URL + '/login?app=gestao&redirect_url=' + request.build_absolute_uri('/gestao/'))
 
 # API Requests - Helper functions
 
 def api_get_request(endpoint, session, tries=0, data=""):
     if data:
-        result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+        result = requests.get(API_URL + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     else:
-        result = requests.get('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+        result = requests.get(API_URL + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
-        if tries < 3:
+        if tries < 4:
             if data:
                 return result if is_json(result.text) else api_get_request(endpoint, session, tries + 1, data)
             return result if is_json(result.text) else api_get_request(endpoint, session, tries + 1)
         else:
+            print('here')
             return None
     else:
         raise ResponseException(result.status_code)
@@ -402,16 +404,16 @@ async def api_delete_async(url, id, session):
 
 async def api_get_bulk_async(endpoint, ids, session):
     async with aiohttp.ClientSession(loop=get_async_loop(), headers={'User-Agent': session['User-Agent']}, cookies=session['cookies']) as s:
-        results = await asyncio.gather(*[api_get_async('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, id, s) for id in ids])
+        results = await asyncio.gather(*[api_get_async(API_URL + endpoint, id, s) for id in ids])
         return results
 
 async def api_delete_bulk_async(endpoint, ids, session):
     async with aiohttp.ClientSession(loop=get_async_loop(), headers={'User-Agent': session['User-Agent']}, cookies=session['cookies']) as s:
-        results = await asyncio.gather(*[api_delete_async('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, id, s) for id in ids])
+        results = await asyncio.gather(*[api_delete_async(API_URL + endpoint, id, s) for id in ids])
         return results
 
 def api_post_request(endpoint, data, session, tries=0):
-    result = requests.post('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+    result = requests.post(API_URL + endpoint, json=data, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_post_request(endpoint, data, session, tries + 1)
@@ -421,7 +423,7 @@ def api_post_request(endpoint, data, session, tries=0):
         raise ResponseException(result.status_code)
 
 def api_delete_request(endpoint, session, tries=0):
-    result = requests.delete('https://detimotic-aulas.ws.atnog.av.it.pt/api/v1' + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
+    result = requests.delete(API_URL + endpoint, headers={'User-Agent': session['User-Agent']}, cookies=session['cookies'])
     if result.status_code == 200:
         if tries < 3:
             return result if is_json(result.text) else api_delete_request(endpoint, session, tries + 1)

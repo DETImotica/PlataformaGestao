@@ -104,6 +104,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+API_URL = 'https://detimotic-aulas.ws.atnog.av.it.pt/api/v1'
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Static files (CSS, JavaScript, Images)
