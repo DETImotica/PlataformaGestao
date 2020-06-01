@@ -568,7 +568,7 @@
             }
             */
             if (error) return;
-            $.post("/post/accessPolicy/" + (edit ? $(context).parents("tr").find('td#uuid').text() : "new"),
+            $.post("/gestao/post/accessPolicy/" + (edit ? $(context).parents("tr").find('td#uuid').text() : "new"),
                 {
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                     policy: JSON.stringify(pdata)
@@ -762,7 +762,7 @@
         // Delete row on delete button click
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
-            $.post("/delete/accessPolicy/" + ($(this).parents("tr").find('td#uuid').text()),
+            $.post("/gestao/delete/accessPolicy/" + ($(this).parents("tr").find('td#uuid').text()),
                 {
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 }

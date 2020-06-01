@@ -114,7 +114,7 @@
                     document.getElementById("inputBody").removeAttribute("name", "error");
                 }
                 if(!empty){
-                    $.post("/post/mobile/notifications",
+                    $.post("/gestao/post/mobile/notifications",
                         {
                             csrfmiddlewaretoken: '{{ csrf_token }}',
                             subject: document.getElementById("inputSubject").value,

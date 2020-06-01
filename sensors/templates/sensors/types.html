@@ -166,7 +166,7 @@ display: none;
                 });
                 $(this).parents("tr").find(".edit").toggle();
                 $(".add").hide();
-                $.post("/post/type/new",
+                $.post("/gestao/post/type/new",
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: name,
@@ -207,7 +207,7 @@ display: none;
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete, .abac").toggle();
                 $(".add").hide();
-                $.post("/post/type/"+$(this).closest("tr").find("#id").text(),
+                $.post("/gestao/post/type/"+$(this).closest("tr").find("#id").text(),
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: name,
@@ -275,7 +275,7 @@ display: none;
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
             if ($(this).closest("tr").find("#id").text()) {
-                $.post("/delete/type/" + $(this).closest("tr").find("#id").text(),
+                $.post("/gestao/delete/type/" + $(this).closest("tr").find("#id").text(),
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}'
                     }

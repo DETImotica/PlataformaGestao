@@ -148,7 +148,7 @@ border-color: #f50000;
             $("#modalText").html("Tem a certeza que pretende adicionar o estatuto de admin ao utilizador selecionado?");
             $("#confirmToggleAdmin").unbind("click");
             $( "#confirmToggleAdmin" ).one( 'click', function(){
-                $.post("/post/user/"+id,
+                $.post("/gestao/post/user/"+id,
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         admin: "true"
@@ -172,7 +172,7 @@ border-color: #f50000;
             $("#modalText").html("Tem a certeza que pretende remover o estatuto de admin ao utilizador selecionado?");
             $("#confirmToggleAdmin").unbind("click");
             $( "#confirmToggleAdmin" ).one( 'click', function(){
-                $.post("/post/user/"+id,
+                $.post("/gestao/post/user/"+id,
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         admin: "false"

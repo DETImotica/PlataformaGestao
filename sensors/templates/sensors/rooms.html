@@ -165,7 +165,7 @@ display: none;
                 });
                 $(this).parents("tr").find(".edit").toggle();
                 $(".add").hide();
-                $.post("/post/room/new",
+                $.post("/gestao/post/room/new",
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: name,
@@ -205,7 +205,7 @@ display: none;
                 });
                 $(this).parents("tr").find("#sensorUpdate, .edit, .cancel, .delete").toggle();
                 $(".add").hide();
-                $.post("/post/room/"+id,
+                $.post("/gestao/post/room/"+id,
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                         name: name,
@@ -266,7 +266,7 @@ display: none;
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
             if ($(this).closest("tr").find("#id").text()) {
-                $.post("/delete/room/" + $(this).closest("tr").find("#id").text(),
+                $.post("/gestao/delete/room/" + $(this).closest("tr").find("#id").text(),
                     {
                         csrfmiddlewaretoken: '{{ csrf_token }}'
                     }
