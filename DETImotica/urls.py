@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('sensors.urls')),
+    path('gestao/', include('sensors.urls')),
 ]
 
 handler404 = 'sensors.views.handler404'

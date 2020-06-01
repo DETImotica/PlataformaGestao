@@ -17,15 +17,15 @@ class RoomsIndexView(generic.ListView):
 
     def get(self, *args, **kwargs):
         if 'allow' not in self.request.session:
-            return redirect('/login')
+            return redirect('sensors:login')
         if not self.request.session['allow']:
-            return redirect('/forbidden')
+            return redirect('sensors:forbidden')
 
         try:
             return super(RoomsIndexView, self).get(*args, **kwargs)
         except ResponseException as r:
             if r.code == 401:
-                return redirect('/logout')
+                return redirect('sensors:logout')
             else:
                 raise Exception
 
@@ -52,15 +52,15 @@ class SensorsIndexView(generic.ListView):
 
     def get(self, *args, **kwargs):
         if 'allow' not in self.request.session:
-            return redirect('/login')
+            return redirect('sensors:login')
         if not self.request.session['allow']:
-            return redirect('/forbidden')
+            return redirect('sensors:forbidden')
 
         try:
             return super(SensorsIndexView, self).get(*args, **kwargs)
         except ResponseException as r:
             if r.code == 401:
-                return redirect('/logout')
+                return redirect('sensors:logout')
             else:
                 raise Exception
 
@@ -94,9 +94,9 @@ class SensorsIndexView(generic.ListView):
 
     def roomDetails(request, room_id):
         if 'allow' not in request.session:
-            return redirect('/login')
+            return redirect('sensors:login')
         if not request.session['allow']:
-            return redirect('/forbidden')
+            return redirect('sensors:forbidden')
 
         try:
             room = SensorsIndexView.loadRoom(request.session, room_id)
@@ -107,7 +107,7 @@ class SensorsIndexView(generic.ListView):
             raise Http404("Sala não existente")
         except ResponseException as r:
             if r.code == 401:
-                return redirect('/logout')
+                return redirect('sensors:logout')
             else:
                 raise Exception
 
@@ -117,15 +117,15 @@ class TypesIndexView(generic.ListView):
 
     def get(self, *args, **kwargs):
         if 'allow' not in self.request.session:
-            return redirect('/login')
+            return redirect('sensors:login')
         if not self.request.session['allow']:
-            return redirect('/forbidden')
+            return redirect('sensors:forbidden')
 
         try:
             return super(TypesIndexView, self).get(*args, **kwargs)
         except ResponseException as r:
             if r.code == 401:
-                return redirect('/logout')
+                return redirect('sensors:logout')
             else:
                 raise Exception
 
@@ -154,15 +154,15 @@ class UsersIndexView(generic.ListView):
 
     def get(self, *args, **kwargs):
         if 'allow' not in self.request.session:
-            return redirect('/login')
+            return redirect('sensors:login')
         if not self.request.session['allow']:
-            return redirect('/forbidden')
+            return redirect('sensors:forbidden')
 
         try:
             return super(UsersIndexView, self).get(*args, **kwargs)
         except ResponseException as r:
             if r.code == 401:
-                return redirect('/logout')
+                return redirect('sensors:logout')
             else:
                 raise Exception
 
@@ -185,9 +185,9 @@ def loadUsers(session):
 
 def notifications(request):
     if 'allow' not in request.session:
-        return redirect('/login')
+        return redirect('sensors:login')
     if not request.session['allow']:
-        return redirect('/forbidden')
+        return redirect('sensors:forbidden')
     return render(request, "sensors/notifications.html", {'uname': request.session['uname']})
 
 class Policy:
@@ -240,9 +240,9 @@ class Policy:
 
 def abac(request, type, id):
     if 'allow' not in request.session:
-        return redirect('/login')
+        return redirect('sensors:login')
     if not request.session['allow']:
-        return redirect('/forbidden')
+        return redirect('sensors:forbidden')
 
     metadata = api_get_request('/' + type + '/' + id, request.session).json()
     body = {
@@ -263,11 +263,11 @@ def template(request):
         user = api_get_request('/identity', request.session).json()
         request.session['uname'] = user['name'] + ' ' + user['surname']
         request.session['allow'] = True
-        return redirect('/')
+        return redirect('sensors:template')
     elif 'allow' not in request.session:
-        return redirect('/login')
+        return redirect('sensors:login')
     elif not request.session['allow']:
-        return redirect('/forbidden')
+        return redirect('sensors:forbidden')
     return render(request, "sensors/index.html", {'uname': request.session['uname']})
 
 # API Requests
@@ -332,14 +332,14 @@ def login(request):
 
 def logout(request):
     if 'allow' not in request.session:
-        return redirect('/login')
+        return redirect('sensors:login')
     try:
         api_get_request('/logout', request.session)
     except ResponseException as r:
         if r.code != 401:
             raise Exception
     request.session.flush()
-    return redirect('/login')
+    return redirect('sensors:login')
 
 
 def forbidden(request):
@@ -349,7 +349,7 @@ def forbidden(request):
         user = api_get_request('/identity', request.session).json()
         request.session['uname'] = user['name'] + ' ' + user['surname']
         request.session['allow'] = False
-        return redirect('/forbidden')
+        return redirect('sensors:forbidden')
     return render(request, "sensors/forbidden.html")
 
 
