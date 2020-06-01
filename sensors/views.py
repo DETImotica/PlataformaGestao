@@ -229,7 +229,7 @@ class Policy:
             self.context = "Sempre"
         else:
             for key in context:
-                if key == 'day':
+                if key == 'date':
                     res.append("- Dias: de " + context[key]['from'] + " a " + context[key]['to'])
                 elif key == 'hour':
                     res.append("- Horas: de " + context[key]['from'] + " a " + context[key]['to'])
@@ -248,32 +248,6 @@ def abac(request, type, id):
     body = {
         'resources.'+type: id
     }
-    data = [
-        {
-            'subjects': [{'teacher': 'true'}],
-            'actions': ['GET', 'POST'],
-            'context': {'ip': 'internal'},
-            'effect': 'allow',
-            'description': 'Permitir que um docente que lecione PEI possa ler ou modificar atributos do sensor das 8h30 às 18h30 dentro da UA',
-            'uid': '1'
-        },
-        {
-            'subjects': [{'admin': 'true'}, {'student': 'true'}, {'teacher': 'true', 'courses': [49985, 49986]}],
-            'actions': ['GET'],
-            'context': {'day': {'from': '2020-01-30', 'to': '2020-06-30'}, 'ip': 'external'},
-            'effect': 'allow',
-            'description': 'Permitir que um estudante que lecione PEI possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
-            'uid': '2'
-        },
-        {
-            'subjects': [{'email': "andr.alves@ua.pt"}, {'email': "jatt@ua.pt"}],
-            'actions': ['GET'],
-            'context': {'hour': {'from': '08:30:00', 'to': '18:30:00'}},
-            'effect': 'deny',
-            'description': 'Não permitir que o André Alves possa ler atributos do sensor 144f das 8h30 às 18h30 dentro da UA',
-            'uid': '3'
-        }
-    ]
     data = api_get_request('/accessPolicies', request.session, data=body).json()
 
     policies = []
@@ -330,6 +304,8 @@ def postObject(request, object, id):
         }
         if "sensor" in request.POST:
             data['evalMatches'] = [{'metric': request.POST.get("sensor")}]
+    elif object == "accessPolicy":
+        data = json.loads(request.POST.get("policy"))
     try:
         if (id == "new"):
             print("Create New " + object + ": " + str(data))

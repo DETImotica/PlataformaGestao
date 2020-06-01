@@ -5,6 +5,12 @@
 {% block uname %}{{ uname }}{% endblock %}
 
 {% block custom-style %}
+    table.table th:nth-last-child(2) {
+        width: 100px;
+    }
+    table.table th:nth-last-child(3) {
+        width: 130px;
+    }
     table.table {
         table-layout: fixed;
     }
@@ -18,12 +24,6 @@
     }
     table.table th:last-child {
         width: 80px;
-    }
-    table.table th:nth-last-child(2) {
-        width: 100px;
-    }
-    table.table th:nth-last-child(3) {
-        width: 130px;
     }
     table.table td a {
 		cursor: pointer;
@@ -43,7 +43,13 @@
     table.table td button.cancel {
         color: #808080;
     }
+    table.table td button.notify {
+        color: #007BFF;
+    }
     table.table td button.reveal {
+        color: #808080;
+    }
+    table.table td button.abac {
         color: #808080;
     }
     table.table td i {
@@ -55,14 +61,23 @@
         box-shadow: none;
         border-radius: 2px;
     }
-    .form-control[name="error"] {
-    border-color: #f50000;
-    }
 	table.table .form-control.error {
 		border-color: #f50000;
 	}
     .error {
         border-color: #f50000;
+    }
+    table.table .form-control[name="error"] {
+    border-color: #f50000;
+    }
+    #inputSubject[name="error"] {
+    border-color: #f50000;
+    }
+    #inputBody[name="error"] {
+    border-color: #f50000;
+    }
+    #inputDescription[name="error] {
+    border-color: #f50000;
     }
 	table.table td .add {
 		display: none;
@@ -110,7 +125,7 @@
                                 <td id="Contexto">{{ policy.context | linebreaks }}</td>
                                 <td id="Descricao">{{ policy.description }}</td>
                                 <td id="Metodos">{{ policy.actions }}</td>
-                                <td id="Efeito" style="color: {% if policy.effect == "Allow" %}green{% else %}red{% endif %}">{{ policy.effect }}</td>
+                                <td id="Efeito" style="color: {% if policy.effect == "Allow" %}green{% else %}red{% endif %}"><b>{{ policy.effect }}</b></td>
                                 <td>
                                     <button class="btn btn-link edit table-btn" data-toggle="tooltip" id="sensorEdit" title="Editar"><i class="material-icons">&#xE254;</i></button>
                                     <button class="btn btn-link delete table-btn" data-toggle="tooltip" id="sensorDelete" title="Apagar"><i class="material-icons">&#xE872;</i></button>
@@ -536,18 +551,15 @@
 
         $("#submitPolicy").unbind("click");
         $( "#submitPolicy" ).bind( 'click', function(){
-            var data = {
-                'subjects': getSubjects(),
-                'actions': getActions(),
-                'context': getContext(),
-                'resources': [{'{{ type }}': '{{ id }}'}],
-                'effect': $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
-                'description': $("#inputDescricao").val()
-            }
-            if(edit) data['uuid'] = $(context).parents("tr").find('td#uuid').text();
-            //TODO: RETIRAR
-            console.log(data);
-            // ^^^^
+            var pdata = {
+                subjects: getSubjects(),
+                actions: getActions(),
+                context: getContext(),
+                resources: [{"{{ type }}": "{{ id }}"}],
+                effect: $('input[id=\'allow\']').prop('checked') ? 'allow' : 'deny',
+                description: $("#inputDescricao").val()
+            };
+            if(edit) pdata['uid'] = $(context).parents("tr").find('td#uuid').text();
             error = false;
             /*
             if (desc.length == 0) {
@@ -556,19 +568,15 @@
             }
             */
             if (error) return;
-            /*
-            $.post("/post/mobile/notifications",
+            $.post("/post/accessPolicy/" + (edit ? $(context).parents("tr").find('td#uuid').text() : "new"),
                 {
                     csrfmiddlewaretoken: '{{ csrf_token }}',
-                    sensor: uuid,
-                    subject: sbj,
-                    message: msg
+                    policy: JSON.stringify(pdata)
                 },
                 function() {
                     window.location.replace(window.location);
                 }
             )
-            */
             $('#policyModal').modal('hide');
         });
     }
@@ -581,7 +589,7 @@
         }
         if($('#teachersCancel').is(":visible")){
             if($('input[id=\'teachersOn\']').prop('checked')) {
-                r = {'teacher': true};
+                r = {'teacher': 'true'};
                 if($("#teachersRestrict").val() != "") {
                     try{
                        courses = $("#teachersRestrict").val().split(",").map(function (course) {
@@ -598,7 +606,7 @@
         }
         if($('#studentsCancel').is(":visible")){
             if($('input[id=\'studentsOn\']').prop('checked')) {
-                r = {'student': true};
+                r = {'student': 'true'};
                 if($("#studentsRestrict").val() != "") {
                     try{
                        courses = $("#studentsRestrict").val().split(",").map(function (course) {
@@ -652,7 +660,7 @@
         res = {};
         if($('#dayCancel').is(":visible")){
             if($("#dayFrom").val() != "" && $("#dayTo").val() != ""){
-                res['day'] = {
+                res['date'] = {
                     'from': $("#dayFrom").val(),
                     'to': $("#dayTo").val()
                 }
@@ -674,9 +682,6 @@
     }
 
     $(document).ready(function(){
-        var uuid = $.trim($(this).find("#id").text())
-        //$.get("/get/policies/" + uuid, function(data) {
-        //});
 
         $('input:radio[name="teachersOptions"]').change(
             function(){
@@ -757,15 +762,11 @@
         // Delete row on delete button click
         $(document).on("click", ".delete", function(){
             $(this).parents("tr").remove();
-            if ($(this).closest("tr").find("#id").text()) {
-                /*
-                $.post("/delete/type/" + $(this).closest("tr").find("#id").text(),
-                    {
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    }
-                );
-                */
-            }
+            $.post("/delete/accessPolicy/" + ($(this).parents("tr").find('td#uuid').text()),
+                {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            );
         });
 
         $('#policyModal').on('hidden.bs.modal', function () {
