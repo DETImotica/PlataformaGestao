@@ -385,7 +385,7 @@
             });
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#coursesModal').hide();
-                if (value.toLowerCase().indexOf("unidades curriculares")==0) {
+                if (value.toLowerCase().indexOf("unidades curriculares")>=0) {
                     $('input[id=\'coursesOn\']').closest('.btn').button('toggle');
                     $('#coursesModal').show();
                     $('#coursesCancel').show();
