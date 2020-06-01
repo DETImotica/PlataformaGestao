@@ -7,6 +7,7 @@ from django.views import generic
 import requests, json
 import asyncio, aiohttp
 from DETImotica.settings import API_URL
+import urllib.parse
 
 from .models import Room, Sensor, Type, User
 
@@ -355,7 +356,7 @@ def forbidden(request):
 
 
 def api_login(request):
-    return redirect(API_URL + '/login?app=gestao&redirect_url=' + request.build_absolute_uri('/gestao/'))
+    return redirect(API_URL + '/login?app=gestao&redirect_url=' + urllib.parse.urlparse(request.build_absolute_uri('/gestao/'))._replace(scheme="https").geturl())
 
 # API Requests - Helper functions
 
