@@ -246,7 +246,11 @@ def abac(request, type, id):
     if not request.session['allow']:
         return redirect('sensors:forbidden')
 
-    metadata = api_get_request('/' + type + '/' + id, request.session).json()
+    try:
+        metadata = api_get_request('/' + type + '/' + id, request.session).json()
+    except ResponseException:
+        pass
+
     body = {
         'resources.'+type: id
     }
