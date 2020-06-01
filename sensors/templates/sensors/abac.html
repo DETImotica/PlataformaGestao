@@ -196,21 +196,6 @@
                 <button class="btn btn-circle" data-toggle="tooltip" id="studentsAdd" title="Restringir estudantes"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
                 <button class="btn btn-circle" data-toggle="tooltip" id="studentsCancel" title="Cancelar o restringimento de estudantes" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
                 <br>
-                <label style="margin-right: 10px; margin-left: 5px;"> Unidades Curriculares </label>
-                <div id="coursesModal" style="display: inline">
-                    <div id="inputCourses" class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-outline-success">
-                            <input type="radio" name="coursesOptions" id="coursesOn" autocomplete="off"> Sim
-                        </label>
-                        <label class="btn btn-outline-danger">
-                            <input type="radio" name="coursesOptions" id="coursesOff" autocomplete="off"> Não
-                        </label>
-                    </div>
-                    <input type="text" id="coursesRestrict" placeholder="Ex: 49984, 49985" class="form-control" style="margin-left: 10px; max-width: 250px; display: inline;" required>
-                </div>
-                <button class="btn btn-circle" data-toggle="tooltip" id="coursesAdd" title="Restringir unidades curriculares"><i style="margin-bottom: 2px;" class="fa fa-plus-circle"></i></button>
-                <button class="btn btn-circle" data-toggle="tooltip" id="coursesCancel" title="Cancelar o restringimento por unidades curriculares" style="display: none;"><i style="margin-bottom: 2px;" class="fa fa-times-circle"></i></button>
-                <br>
                 <label style="margin-right: 10px; margin-left: 5px;"> Email </label>
                 <div id="emailModal" style="display: inline">
                     <div id="emailAdmins" class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -384,25 +369,6 @@
                 }
             });
             $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
-                $('#coursesModal').hide();
-                if (value.toLowerCase().indexOf("unidades curriculares")>=0) {
-                    $('input[id=\'coursesOn\']').closest('.btn').button('toggle');
-                    $('#coursesModal').show();
-                    $('#coursesCancel').show();
-                    $('#coursesAdd').hide();
-                    if (value.toLowerCase().indexOf(":")>=0) {
-                        if (value.toLowerCase().indexOf("</")>0) {
-                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2, (value.toLowerCase().indexOf("</"))-(value.toLowerCase().indexOf(":")+2)));
-                        } else {
-                            $('#coursesRestrict').val(value.substr(value.toLowerCase().indexOf(":")+2));
-                        }
-                    } else {
-                        $('#coursesRestrict').val("");
-                    }
-                    return false;
-                }
-            });
-            $.each($(context).parents("tr").find("td#Sujeitos").html().split("<br>"), function(key, value) {
                 $('#emailModal').hide();
                 if (value.toLowerCase().indexOf("email")>=0) {
                     $('input[id=\'emailOn\']').closest('.btn').button('toggle');
@@ -495,21 +461,6 @@
             $('#studentsAdd').show();
             $('#studentsRestrict').val("");
         });
-        $("#coursesAdd").click(function(){
-            $('input[id=\'coursesOn\']').prop("checked", true);
-            $('input[id=\'coursesOff\']').prop("checked", false);
-            $('input[id=\'coursesOn\']').parent('label').addClass('active');
-            $('input[id=\'coursesOff\']').parent('label').removeClass('active');
-            $('#coursesModal').show();
-            $('#coursesAdd').hide();
-            $('#coursesCancel').show();
-        });
-        $("#coursesCancel").click(function(){
-            $('#coursesModal').hide();
-            $('#coursesCancel').hide();
-            $('#coursesAdd').show();
-            $('#coursesRestrict').val("");
-        });
         $("#dayAdd").click(function(){
             $('#dayModal').show();
             $('#dayAdd').hide();
@@ -596,7 +547,7 @@
                            parseInt(course.trim()); // check
                            return course.trim();
                        });
-                       r['courses'] = courses;
+                       r['teacher_courses'] = courses;
                     }
                     catch (e) {}
                 }
@@ -613,29 +564,13 @@
                            parseInt(course.trim()); // check
                            return course.trim();
                        });
-                       r['courses'] = courses;
+                       r['student_courses'] = courses;
                     }
                     catch (e) {}
                 }
                 res.push(r);
             }
             else if($('input[id=\'studentsOff\']').prop('checked')) res.push({'student': 'false'});
-        }
-        if($('#coursesCancel').is(":visible")){
-            if($('input[id=\'coursesOn\']').prop('checked')) {
-                r = {};
-                if($("#coursesRestrict").val() != "") {
-                    try{
-                       courses = $("#coursesRestrict").val().split(",").map(function (course) {
-                           parseInt(course.trim()); // check
-                           return course.trim();
-                       });
-                       r['courses'] = courses;
-                       res.push(r);
-                    }
-                    catch (e) {}
-                }
-            }
         }
         if($('#emailCancel').is(":visible")){
             if($('input[id=\'emailOn\']').prop('checked')) {
@@ -709,19 +644,6 @@
                     $('#studentsRestrict').val("");
                 }
             });
-        $('input:radio[name="coursesOptions"]').change(
-            function(){
-                if ($('input[id=\'coursesOff\']').is(':checked')) {
-                    $('input[id=\'coursesOn\']').prop("checked", false);
-                    $('input[id=\'coursesOff\']').prop("checked", false);
-                    $('input[id=\'coursesOn\']').parent('label').removeClass('active');
-                    $('input[id=\'coursesOff\']').parent('label').removeClass('active');
-                    $('#coursesModal').hide();
-                    $('#coursesCancel').hide();
-                    $('#coursesAdd').show();
-                    $('#coursesRestrict').val("");
-                }
-            });
         $('input:radio[name="emailOptions"]').change(
             function(){
                 if ($('input[id=\'emailOff\']').is(':checked')) {
@@ -776,8 +698,6 @@
             $('#teachersCancel').hide();
             $('#studentsAdd').show();
             $('#studentsCancel').hide();
-            $('#coursesAdd').show();
-            $('#coursesCancel').hide();
             $('#emailAdd').show();
             $('#emailCancel').hide();
             $('#dayAdd').show();
@@ -808,7 +728,6 @@
             $('input[type=radio]').parent('label').removeClass('active');
             $('#teachersRestrict').val("");
             $('#studentsRestrict').val("");
-            $('#coursesRestrict').val("");
             $('#emailRestrict').val("");
         });
     });

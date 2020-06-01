@@ -217,7 +217,7 @@ class Policy:
                     subres.append("Estudantes")
                 elif key == 'teacher':
                     subres.append("Docentes")
-                elif key == 'courses':
+                elif 'courses' in key:
                     subres.append("Unidades Curriculares: " + ', '.join([str(x) for x in subject[key]]))
             if subres != []:
                 res.append('- ' + ', '.join(subres))
