@@ -266,7 +266,7 @@
           $.ajaxSetup({
             error: function(xhr, status, error) {
                 if(xhr.status == 401) {
-                    window.location.replace('/login');
+                    window.location.replace('login');
                 }
                 else {
                     $("#errorID").html(xhr.status + ' ' + error);
